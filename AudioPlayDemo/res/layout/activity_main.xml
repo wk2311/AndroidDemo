@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent" android:layout_width="match_parent">
+	<LinearLayout
+	    android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:layout_gravity="top">
+		
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+		    android:orientation="horizontal"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginTop="4.0dip">
+			
+			<Button
+			    android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/btnPlayUrl"
+				android:text="载入" />
+			
+			<Button
+			    android:id="@+id/btnPause"
+			    android:layout_height="wrap_content"
+				android:layout_width="80dip"
+				android:text="播放" />
+			
+			<Button
+			    android:id="@+id/btnStop"
+			    android:layout_height="wrap_content"
+				android:layout_width="80dip"
+				android:text="停止" />
+			
+		</LinearLayout>
+		
+		<LinearLayout
+		    android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="20dip">
+			
+			<SeekBar
+				android:id="@+id/skbProgress"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:paddingLeft="10dip"
+			    android:paddingRight="10dip"
+				android:layout_weight="1.0"
+			    android:layout_gravity="center_vertical"
+				android:max="100" />
+		</LinearLayout>
+		
+	</LinearLayout>
+	
+</FrameLayout>
