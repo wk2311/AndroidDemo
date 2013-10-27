@@ -4,6 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.os.Bundle;
@@ -89,7 +90,8 @@ public class MainActivity extends InitializableActivity {
 					e.printStackTrace();
 				}
 			} else if (arg0 == btnStop) {
-				myPlayer.stop();
+//				myPlayer.stop();
+				MainActivity.this.startActivity(new Intent(MainActivity.this, AudioBarActivity.class));
 			}
 		}
 	}
