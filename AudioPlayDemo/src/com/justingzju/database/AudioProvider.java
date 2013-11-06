@@ -35,7 +35,10 @@ public class AudioProvider extends ContentProvider {
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) {
 		// TODO Auto-generated method stub
-		return 0;
+		SQLiteDatabase db = helper.getWritableDatabase();
+		int count = db.delete("playlist", arg1, arg2);
+		getContext().getContentResolver().notifyChange(arg0, null);
+		return count;
 	}
 
 	@Override
@@ -60,6 +63,9 @@ public class AudioProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		// TODO Auto-generated method stub
+		SQLiteDatabase db = helper.getWritableDatabase();
+		db.insert("playlist", null, values);
+		getContext().getContentResolver().notifyChange(uri, null);
 		return null;
 	}
 
@@ -87,13 +93,16 @@ public class AudioProvider extends ContentProvider {
 		StringBuilder queryBuilder = new StringBuilder().append("SELECT ")
 				.append(projectionBuilder.toString()).append(" FROM playlist");
 		SQLiteDatabase db = helper.getReadableDatabase();
-		return db.rawQuery(queryBuilder.toString(), selectionArgs);
+		Cursor cursor = db.rawQuery(queryBuilder.toString(), selectionArgs);
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		return cursor;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
 		// TODO Auto-generated method stub
+		getContext().getContentResolver().notifyChange(uri, null);
 		return 0;
 	}
 

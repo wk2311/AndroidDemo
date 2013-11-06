@@ -20,24 +20,30 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.andrew.apolloMod.ui.widgets.BottomActionBar;
+import com.justingzju.Constant;
+import com.justingzju.LogUtil;
+import com.justingzju.audioplay.AudioBarActivity;
 import com.justingzju.audioplay.AudioClient;
-import com.justingzju.audioplay.AudioService;
 import com.justingzju.audioplay.R;
+import com.justingzju.database.AudioProvider;
 //import com.andrew.apolloMod.R;
 //import com.andrew.apolloMod.helpers.utils.MusicUtils;
 //import com.andrew.apolloMod.helpers.utils.ThemeUtils;
 //import com.andrew.apolloMod.service.ApolloService;
+import com.justingzju.service.AudioService;
+import com.justingzju.service.DownloadService;
 
 /**
  * @author Andrew Neal
  */
 public class BottomActionBarFragment extends Fragment {
+	
+	private final static LogUtil mLog = new LogUtil(BottomActionBarFragment.class.getSimpleName(), true);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		System.out.println("BottomActionBarFragment onCreate");
 	}
 
 	@Override
@@ -57,7 +63,7 @@ public class BottomActionBarFragment extends Fragment {
     	mBottomActionBar.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				System.out.println("bottom_action_bar onClick");
+				mLog.w("bottom_action_bar onClick");
 			}
 		});
     	
@@ -65,8 +71,8 @@ public class BottomActionBarFragment extends Fragment {
 			
 			@Override
 			public boolean onLongClick(View v) {
-				System.out.println("bottom_action_bar onLongClick");
-				getActivity().getContentResolver().delete(Uri.parse("content://com.justingzju.database.PlaylistProvider"), "", null);
+				mLog.w("bottom_action_bar onLongClick");
+				getActivity().getContentResolver().delete(Constant.PROVIDER_AUDIO, "name LIKE ?", new String[]{"%福利%"});
 				return false;
 			}
 		});
@@ -100,7 +106,7 @@ public class BottomActionBarFragment extends Fragment {
         mPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("bottom_action_bar_play onClick");
+            	mLog.w("bottom_action_bar_play onClick");
 				try {
 					if(AudioClient.getService().isPlaying()) {
 						AudioClient.getService().pause();
@@ -117,19 +123,12 @@ public class BottomActionBarFragment extends Fragment {
         mNext.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-            	System.out.println("bottom_action_bar_next onClick");
+            	mLog.w("bottom_action_bar_next onClick");
             	try {
 					AudioClient.getService().next();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-//                if (MusicUtils.mService == null)
-//                    return;
-//                try {
-//                    MusicUtils.mService.next();
-//                } catch (RemoteException ex) {
-//                    ex.printStackTrace();
-//                }
             }
         });
 
@@ -138,26 +137,12 @@ public class BottomActionBarFragment extends Fragment {
         return root;
     }
 
-    /**
-     * Update the list as needed
-     */
-    private final BroadcastReceiver mediaStatusReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-        	String action = intent.getAction();
-        	if(action.equals(AudioService.PLAYSTATE_CHANGED)) {
-        		mBottomActionBar.update();
-        	}
-        }
-    };
-
     @Override
     public void onStart() {
         super.onStart();
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioService.PLAYSTATE_CHANGED);
-//        filter.addAction(ApolloService.META_CHANGED);
+        filter.addAction(AudioService.META_CHANGED);
         getActivity().registerReceiver(mediaStatusReceiver, filter);
     }
 
@@ -166,4 +151,15 @@ public class BottomActionBarFragment extends Fragment {
         getActivity().unregisterReceiver(mediaStatusReceiver);
         super.onStop();
     }
+
+	/**
+	 * Update the list as needed
+	 */
+	private final BroadcastReceiver mediaStatusReceiver = new BroadcastReceiver() {
+	
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	    	mBottomActionBar.update();
+	    }
+	};
 }

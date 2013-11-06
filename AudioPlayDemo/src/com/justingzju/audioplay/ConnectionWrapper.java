@@ -1,5 +1,7 @@
 package com.justingzju.audioplay;
 
+import com.justingzju.service.IAudioService;
+
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;

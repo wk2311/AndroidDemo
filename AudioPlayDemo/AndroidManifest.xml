@@ -24,10 +24,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" android:label="@string/title_activity_main"></activity>
-        <service android:name=".AudioService"></service>
+        <service android:name="com.justingzju.service.AudioService"></service>
+        <service android:name="com.justingzju.service.DownloadService"></service>
         <provider
             android:name="com.justingzju.database.AudioProvider"
-            android:authorities="com.justingzju.database.PlaylistProvider"
+            android:authorities="com.justingzju.database.AudioProvider"
             android:exported="false">
         </provider>
     </application>

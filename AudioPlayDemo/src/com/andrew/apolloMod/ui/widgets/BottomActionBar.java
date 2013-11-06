@@ -4,33 +4,16 @@
 
 package com.andrew.apolloMod.ui.widgets;
 
-//import static com.andrew.apolloMod.Constants.SIZE_THUMB;
-//import static com.andrew.apolloMod.Constants.SRC_FIRST_AVAILABLE;
-//import static com.andrew.apolloMod.Constants.TYPE_ALBUM;
-import com.justingzju.audioplay.AudioClient;
-import com.justingzju.audioplay.R;
-
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.RemoteException;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-//import com.andrew.apolloMod.R;
-//import com.andrew.apolloMod.activities.AudioPlayerHolder;
-//import com.andrew.apolloMod.activities.QuickQueue;
-//import com.andrew.apolloMod.cache.ImageInfo;
-//import com.andrew.apolloMod.cache.ImageProvider;
-//import com.andrew.apolloMod.helpers.utils.MusicUtils;
-//import com.andrew.apolloMod.helpers.utils.ThemeUtils;
+import com.justingzju.audioplay.AudioClient;
+import com.justingzju.audioplay.R;
+
 
 /**
  * @author Andrew Neal
@@ -51,14 +34,19 @@ public class BottomActionBar extends LinearLayout {
 
     /**
 	 * Updates the bottom ActionBar's info
-	 * 
-	 * @param activity
-	 * @throws RemoteException
 	 */
 	public void update() {
-		System.out.println(this.getClass().getName()+" update");
-		Activity activity = (Activity) getContext();
-		View bottomActionBar = this;
+		if(AudioClient.getService()==null) {
+			return;
+		}
+		
+		// Track name
+        TextView mTrackName = (TextView) findViewById(R.id.bottom_action_bar_track_name);
+        try {
+			mTrackName.setText(AudioClient.getService().getAudioName());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	
 //	    if (MusicUtils.mService != null && MusicUtils.getCurrentAudioId() != -1) {
 //	

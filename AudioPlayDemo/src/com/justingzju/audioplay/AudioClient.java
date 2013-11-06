@@ -2,6 +2,9 @@ package com.justingzju.audioplay;
 
 import java.util.HashMap;
 
+import com.justingzju.service.AudioService;
+import com.justingzju.service.IAudioService;
+
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
@@ -23,11 +26,12 @@ public class AudioClient {
 		mService = service;
 	}
 	
-	public static boolean bindService(Activity activity, ServiceConnection connection) {
+	public static boolean startAndBindService(Activity activity, ServiceConnection connection) {
 		Activity realActivity = activity.getParent();
         if (realActivity == null) {
             realActivity = activity;
         }
+        realActivity.startService(new Intent(realActivity, AudioService.class));
         ConnectionWrapper connectionWrapper = new ConnectionWrapper(connection);
 		if(realActivity.bindService(new Intent(realActivity, AudioService.class), connectionWrapper , Service.BIND_AUTO_CREATE)) {
 			connectionMap.put(realActivity, connectionWrapper);
