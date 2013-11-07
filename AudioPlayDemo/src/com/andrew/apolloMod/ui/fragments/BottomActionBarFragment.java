@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
@@ -20,18 +19,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.andrew.apolloMod.ui.widgets.BottomActionBar;
+import com.justingzju.Audio;
 import com.justingzju.Constant;
 import com.justingzju.LogUtil;
-import com.justingzju.audioplay.AudioBarActivity;
 import com.justingzju.audioplay.AudioClient;
 import com.justingzju.audioplay.R;
-import com.justingzju.database.AudioProvider;
-//import com.andrew.apolloMod.R;
-//import com.andrew.apolloMod.helpers.utils.MusicUtils;
-//import com.andrew.apolloMod.helpers.utils.ThemeUtils;
-//import com.andrew.apolloMod.service.ApolloService;
 import com.justingzju.service.AudioService;
-import com.justingzju.service.DownloadService;
 
 /**
  * @author Andrew Neal
@@ -72,7 +65,7 @@ public class BottomActionBarFragment extends Fragment {
 			@Override
 			public boolean onLongClick(View v) {
 				mLog.w("bottom_action_bar onLongClick");
-				getActivity().getContentResolver().delete(Constant.PROVIDER_AUDIO, "name LIKE ?", new String[]{"%福利%"});
+				getActivity().getContentResolver().delete(Constant.PROVIDER_AUDIO, Audio.TITLE+" LIKE ?", new String[]{"%福利%"});
 				return false;
 			}
 		});
@@ -159,7 +152,12 @@ public class BottomActionBarFragment extends Fragment {
 	
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	    	mBottomActionBar.update();
+	    	String action = intent.getAction();
+	    	if(action.equals(AudioService.PLAYSTATE_CHANGED)) {
+	    		mBottomActionBar.updatePlayButton();
+	    	} else if (action.equals(AudioService.META_CHANGED)) {
+	    		mBottomActionBar.update();
+			}
 	    }
 	};
 }

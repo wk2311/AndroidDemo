@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.justingzju.Audio;
 import com.justingzju.Constant;
 import com.justingzju.database.AudioProvider;
 
@@ -36,8 +37,8 @@ public class DownloadService extends Service {
 				try {
 					URL url = new URL("http://justingzju.sinaapp.com/SearchAudio.php?listName=playlist");
 					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					List<Audio> list = readJsonStream(connection.getInputStream());
-					getContentResolver().insert(Constant.PROVIDER_AUDIO, list.get(0).getContentValues());
+					List<ContentValues> list = readJsonStream(connection.getInputStream());
+					getContentResolver().insert(Constant.PROVIDER_AUDIO, list.get(0));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -47,7 +48,7 @@ public class DownloadService extends Service {
 		return START_NOT_STICKY;
 	}
 	
-	private List<Audio> readJsonStream(InputStream in) throws IOException {
+	private List<ContentValues> readJsonStream(InputStream in) throws IOException {
 		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 		try {
 			return readAudioArray(reader);
@@ -57,8 +58,8 @@ public class DownloadService extends Service {
 		}
 	}
 
-	private List<Audio> readAudioArray(JsonReader reader) throws IOException {
-		List<Audio> messages = new ArrayList<Audio>();
+	private List<ContentValues> readAudioArray(JsonReader reader) throws IOException {
+		List<ContentValues> messages = new ArrayList<ContentValues>();
 		
 		reader.beginArray();
 		while (reader.hasNext()) {
@@ -68,37 +69,29 @@ public class DownloadService extends Service {
 		return messages;
 	}
 
-	private Audio readAudio(JsonReader reader) throws IOException {
-		String audioTitle = null;
-		String audioURL = null;
+	private ContentValues readAudio(JsonReader reader) throws IOException {
+		ContentValues audioContentValues = new ContentValues();
 		
 		reader.beginObject();
 		while (reader.hasNext()) {
 			String name = reader.nextName();
-			if (name.equals("Title")) {
-				audioTitle = reader.nextString();
-			} else if (name.equals("AudioURL")) {
-				audioURL = reader.nextString();
+			if (name.equals(Audio.TITLE)) {
+				audioContentValues.put(Audio.TITLE, reader.nextString());
+			} else if (name.equals(Audio.AUTHOR)) {
+				audioContentValues.put(Audio.AUTHOR, reader.nextString());
+			} else if (name.equals(Audio.BROADCASTER)) {
+				audioContentValues.put(Audio.BROADCASTER, reader.nextString());
+			} else if (name.equals(Audio.AUDIO_URL)) {
+				audioContentValues.put(Audio.AUDIO_URL, reader.nextString());
+			} else if (name.equals(Audio.IMAGE_URL)) {
+				audioContentValues.put(Audio.IMAGE_URL, reader.nextString());
 			} else {
 				reader.skipValue();
 			}
 		}
 		reader.endObject();
-		return new Audio(audioTitle, audioURL);
-	}
-
-	private class Audio {
-		ContentValues mContentValues;
 		
-		public Audio(String name, String url) {
-			mContentValues = new ContentValues();
-			mContentValues.put("name", name);
-			mContentValues.put("url", url);
-		}
-		
-		public ContentValues getContentValues() {
-			return mContentValues;
-		}
+		return audioContentValues;
 	}
 
 }

@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.andrew.apolloMod.ui.fragments.BottomActionBarFragment;
+import com.justingzju.Audio;
 import com.justingzju.Constant;
 import com.justingzju.LogUtil;
 import com.justingzju.audioplay.AudioClient;
@@ -62,7 +63,7 @@ public class TracksFragment extends Fragment {
 		// TODO Auto-generated method stub
 		mLog.e("onCreate");
 		mAdapter = new TrackAdapter(getActivity(), R.layout.listview_items,
-				null, new String[] { "name", "url" }, new int[] {
+				null, new String[] { Audio.TITLE, Audio.AUTHOR }, new int[] {
 						R.id.listview_item_line_one,
 						R.id.listview_item_line_two }, 0);
 	}

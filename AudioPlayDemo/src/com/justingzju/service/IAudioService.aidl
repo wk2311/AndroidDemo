@@ -8,6 +8,7 @@ interface IAudioService {
 	boolean isPlaying();
 	String getAudioName();
 	String getAudioImage();
+	String getAuthor();
 	int getPosition();
 	void setPostion(int position);
 }

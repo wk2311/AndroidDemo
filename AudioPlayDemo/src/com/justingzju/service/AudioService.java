@@ -1,5 +1,6 @@
 package com.justingzju.service;
 
+import com.justingzju.Audio;
 import com.justingzju.Constant;
 import com.justingzju.LogUtil;
 import com.justingzju.audioplay.AudioBarActivity;
@@ -40,6 +41,7 @@ public class AudioService extends Service {
 		mCursor = getContentResolver().query(Constant.PROVIDER_AUDIO, null, null, null, null);
 		mContentObserver = new AudioContentObserver(new Handler());
 		getContentResolver().registerContentObserver(Constant.PROVIDER_AUDIO, true, mContentObserver);
+		
 		mBinder.next();
 	}
 	
@@ -81,8 +83,8 @@ public class AudioService extends Service {
 	private void reload() {
 		mMediaPlayer.reset();
 		broadcastChange(PLAYSTATE_CHANGED);
-		String url = mCursor.getString(mCursor.getColumnIndex("url"));
 		try {
+			String url = mCursor.getString(mCursor.getColumnIndex(Audio.AUDIO_URL));
 			mMediaPlayer.setDataSource(url);
 			mMediaPlayer.prepareAsync();
 		} catch (Exception e) {
@@ -134,13 +136,31 @@ public class AudioService extends Service {
 		@Override
 		public String getAudioName() throws RemoteException {
 			// TODO Auto-generated method stub
-			return mCursor.getString(mCursor.getColumnIndex("name"));
+			try {
+				return mCursor.getString(mCursor.getColumnIndex(Audio.TITLE));
+			} catch (Exception e) {
+				return "";
+			}
 		}
 
 		@Override
 		public String getAudioImage() throws RemoteException {
 			// TODO Auto-generated method stub
-			return "http://tp1.sinaimg.cn/1354647164/180/40017426821/1";
+			try {
+				return mCursor.getString(mCursor.getColumnIndex(Audio.IMAGE_URL));
+			} catch (Exception e) {
+				return "";
+			}
+		}
+
+		@Override
+		public String getAuthor() throws RemoteException {
+			// TODO Auto-generated method stub
+			try {
+				return mCursor.getString(mCursor.getColumnIndex(Audio.AUTHOR));
+			} catch (Exception e) {
+				return "";
+			}
 		}
 
 		@Override
