@@ -37,8 +37,8 @@ public class DownloadService extends Service {
 				try {
 					URL url = new URL("http://justingzju.sinaapp.com/SearchAudio.php?listName=playlist");
 					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					List<ContentValues> list = readJsonStream(connection.getInputStream());
-					getContentResolver().insert(Constant.PROVIDER_AUDIO, list.get(0));
+					ContentValues[] values = readJsonStream(connection.getInputStream());
+					getContentResolver().bulkInsert(Constant.PROVIDER_AUDIO, values);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -48,7 +48,7 @@ public class DownloadService extends Service {
 		return START_NOT_STICKY;
 	}
 	
-	private List<ContentValues> readJsonStream(InputStream in) throws IOException {
+	private ContentValues[] readJsonStream(InputStream in) throws IOException {
 		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 		try {
 			return readAudioArray(reader);
@@ -58,15 +58,16 @@ public class DownloadService extends Service {
 		}
 	}
 
-	private List<ContentValues> readAudioArray(JsonReader reader) throws IOException {
-		List<ContentValues> messages = new ArrayList<ContentValues>();
+	private ContentValues[] readAudioArray(JsonReader reader) throws IOException {
+		List<ContentValues> valueList = new ArrayList<ContentValues>();
 		
 		reader.beginArray();
 		while (reader.hasNext()) {
-			messages.add(readAudio(reader));
+			valueList.add(readAudio(reader));
 		}
 		reader.endArray();
-		return messages;
+		
+		return valueList.toArray(new ContentValues[valueList.size()]);
 	}
 
 	private ContentValues readAudio(JsonReader reader) throws IOException {

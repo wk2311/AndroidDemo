@@ -1,6 +1,9 @@
 package com.justingzju.database;
 
+import com.justingzju.Constant;
+
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -32,13 +35,13 @@ public class AudioProvider extends ContentProvider {
 				AUDIO_URL_ID);
 	}
 
+	private DBHelper helper;
+
 	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
+	public boolean onCreate() {
 		// TODO Auto-generated method stub
-		SQLiteDatabase db = helper.getWritableDatabase();
-		int count = db.delete("playlist", arg1, arg2);
-		getContext().getContentResolver().notifyChange(arg0, null);
-		return count;
+		helper = new DBHelper(getContext());
+		return false;
 	}
 
 	@Override
@@ -58,24 +61,6 @@ public class AudioProvider extends ContentProvider {
 			break;
 		}
 		return null;
-	}
-
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		SQLiteDatabase db = helper.getWritableDatabase();
-		db.insert("playlist", null, values);
-		getContext().getContentResolver().notifyChange(uri, null);
-		return null;
-	}
-
-	private DBHelper helper;
-
-	@Override
-	public boolean onCreate() {
-		// TODO Auto-generated method stub
-		helper = new DBHelper(getContext());
-		return false;
 	}
 
 	@Override
@@ -99,11 +84,50 @@ public class AudioProvider extends ContentProvider {
 	}
 
 	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = helper.getWritableDatabase();
+		Long id = db.insert("playlist", null, values);
+		notifyChange();
+		return ContentUris.withAppendedId(uri, id);
+	}
+
+	@Override
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		SQLiteDatabase db = helper.getWritableDatabase();
+		db.beginTransaction();
+		try {
+			for(int i=0; i<values.length; i++) {
+				db.insert("playlist", null, values[i]);
+				db.yieldIfContendedSafely();
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		notifyChange();
+		return values.length;
+	}
+
+	@Override
+	public int delete(Uri arg0, String arg1, String[] arg2) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = helper.getWritableDatabase();
+		int count = db.delete("playlist", arg1, arg2);
+		notifyChange();
+		return count;
+	}
+
+	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
 		// TODO Auto-generated method stub
-		getContext().getContentResolver().notifyChange(uri, null);
+		notifyChange();
 		return 0;
+	}
+	
+	private void notifyChange() {
+		getContext().getContentResolver().notifyChange(Constant.PROVIDER_AUDIO, null);
 	}
 
 }
