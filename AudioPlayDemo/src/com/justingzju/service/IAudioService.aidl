@@ -7,6 +7,7 @@ interface IAudioService {
 	void next();
 	boolean isPlaying();
 	String getAudioName();
+	String getAudioImage();
 	int getPosition();
 	void setPostion(int position);
 }

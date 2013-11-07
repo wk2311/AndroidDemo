@@ -138,6 +138,12 @@ public class AudioService extends Service {
 		}
 
 		@Override
+		public String getAudioImage() throws RemoteException {
+			// TODO Auto-generated method stub
+			return "http://tp1.sinaimg.cn/1354647164/180/40017426821/1";
+		}
+
+		@Override
 		public int getPosition() throws RemoteException {
 			// TODO Auto-generated method stub
 			return mCursor.getPosition();

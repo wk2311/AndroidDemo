@@ -8,11 +8,14 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.justingzju.Constant;
 import com.justingzju.audioplay.AudioClient;
 import com.justingzju.audioplay.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 
 /**
@@ -42,8 +45,10 @@ public class BottomActionBar extends LinearLayout {
 		
 		// Track name
         TextView mTrackName = (TextView) findViewById(R.id.bottom_action_bar_track_name);
+        ImageView mTrackImage = (ImageView) findViewById(R.id.bottom_action_bar_album_art);
         try {
 			mTrackName.setText(AudioClient.getService().getAudioName());
+			ImageLoader.getInstance().displayImage(AudioClient.getService().getAudioImage(), mTrackImage, Constant.DISPLAY_IMAGE_OPTIONS);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

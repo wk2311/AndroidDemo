@@ -10,8 +10,7 @@
         android:layout_height="@dimen/listview_album_art"
         android:layout_alignParentLeft="true"
         android:layout_margin="@dimen/listview_album_margin"
-        android:scaleType="centerCrop" 
-	    android:background="@drawable/no_art_small"/>
+        android:scaleType="centerCrop" />
 
     <!-- Padding may be set on via code for some tabs -->
 

@@ -30,11 +30,15 @@ import com.justingzju.audioplay.R;
 import com.justingzju.database.AudioProvider;
 import com.justingzju.service.AudioService;
 import com.justingzju.service.DownloadService;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class TracksFragment extends Fragment {
+
+	private final static LogUtil mLog = new LogUtil(
+	TracksFragment.class.getSimpleName(), true);
 
 	@Override
 	public void onPause() {
@@ -49,9 +53,6 @@ public class TracksFragment extends Fragment {
 		super.onResume();
 		mLog.e("onResume");
 	}
-
-	private final static LogUtil mLog = new LogUtil(
-			TracksFragment.class.getSimpleName(), true);
 
 	private SimpleCursorAdapter mAdapter;
 
@@ -156,6 +157,7 @@ public class TracksFragment extends Fragment {
 	public void onStop() {
 		// TODO Auto-generated method stub
 		mLog.e("onStop");
+		ImageLoader.getInstance().stop();
 		getActivity().unregisterReceiver(mediaStatusReceiver);
 		super.onStop();
 	}
