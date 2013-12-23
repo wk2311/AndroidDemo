@@ -3,5 +3,17 @@
     <string name="app_name">静雅FM</string>
     <string name="menu_settings">设置</string>
     <string name="title_activity_home_page">主页</string>
+    
+    <!-- Content descriptions for the Bottom Action Bar -->
+    <string name="cd_favorite">标记为喜爱的</string>
+    <string name="cd_search">搜索您的音乐库</string>
+    <string name="cd_overflow">更多选项</string>
+    <string name="cd_bottom_action_bar_album_art">专辑图片</string>
+    <string name="cd_repeat">重复一首或全部</string>
+    <string name="cd_previous">前一首</string>
+    <string name="cd_play">暂停/继续</string>
+    <string name="cd_next">下一首</string>
+    <string name="cd_shuffle">随机播放</string>
+    
 
 </resources>

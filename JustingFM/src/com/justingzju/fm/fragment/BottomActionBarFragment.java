@@ -1,9 +1,13 @@
 package com.justingzju.fm.fragment;
 
+import java.util.ArrayList;
+
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.MediaStore.Audio;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,10 +15,16 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.justingzju.fm.BuildConfig;
 import com.justingzju.fm.R;
+import com.justingzju.fm.service.DownloadRequest;
+import com.justingzju.fm.service.DownloadService;
 import com.justingzju.fm.widgets.BottomActionBar;
+import com.justingzju.util.LogUtil;
 
 public class BottomActionBarFragment extends Fragment {
+	private static final LogUtil mLog = new LogUtil(
+			BottomActionBarFragment.class.getSimpleName(), true);
 
 	private BottomActionBar mBottomActionBar;
 	private ImageButton mPrev;
@@ -31,7 +41,19 @@ public class BottomActionBarFragment extends Fragment {
 		mBottomActionBar.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// mLog.w("bottom_action_bar onClick");
+				mLog.v("bottom_action_bar onClick");
+//				ArrayList<DownloadRequest> requests = new ArrayList<DownloadRequest>();
+//				requests.add(new DownloadRequest(
+//						"http://www.justing.com.cn:8081/free/podcastdownloadfree/73954.mp3?ut=free",
+//						"【双语】盗梦工厂18：能力是改革的敌人.mp3"));
+//				requests.add(new DownloadRequest(
+//						"http://www.justing.com.cn:8081/free/podcastdownloadfree/74116.mp3?ut=free",
+//						"姓刘的匈奴（1）.mp3"));
+//				Intent downloadIntent = new Intent(getActivity(), DownloadService.class)
+//						.setAction(DownloadService.ACTION_START_DOWNLOADs)
+//						.putParcelableArrayListExtra(
+//								DownloadService.EXTRA_DOWNLOAD_REQUEST, requests);
+//				getActivity().startService(downloadIntent);
 			}
 		});
 
