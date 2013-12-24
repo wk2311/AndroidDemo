@@ -17,13 +17,15 @@ public class AudioDBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " " +
-				"(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+				Audio._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Audio.TITLE + " VARCHAR, " +
 				Audio.AUTHOR + " VARCHAR, " +
 				Audio.BROADCASTER + " VARCHAR, " +
+				Audio.DURATION + " VARCHAR, " +
 				Audio.AUDIO_URL + " VARCHAR, " +
-				Audio.AUDIO_URI + " VARCHAR)");
+				Audio.AUDIO_URI + " VARCHAR, " + 
+				Audio.PUB_DATE + " VARCHAR" + ")");
 	}
 
 	@Override

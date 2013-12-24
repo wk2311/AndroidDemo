@@ -22,16 +22,34 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		ContentValues[] valuesArray = new ContentValues[INTT_ROWS];
 		for (int i = 0; i < valuesArray.length; i++) {
 			ContentValues contentValues = new ContentValues();
-			contentValues.put(Audio.TITLE, "audio"+i);
+			contentValues.put(Audio.TITLE, Audio.TITLE+i);
+			contentValues.put(Audio.AUTHOR, Audio.AUTHOR+i);
+			contentValues.put(Audio.BROADCASTER, Audio.BROADCASTER+i);
+			contentValues.put(Audio.DURATION, Audio.DURATION+i);
+			contentValues.put(Audio.AUDIO_URL, Audio.AUDIO_URL+i);
+			contentValues.put(Audio.AUDIO_URI, Audio.AUDIO_URI+i);
+			contentValues.put(Audio.PUB_DATE, Audio.PUB_DATE+i);
 			valuesArray[i] = contentValues;
 		}
 		getMockContentResolver().bulkInsert(AudioProvider.CONTENT_URI, valuesArray);
 	}
 
 	public void testQuery() {
+		for (int i = 0; i < INTT_ROWS; i++) {
+			queryTestWithColumn(Audio.TITLE, i);
+			queryTestWithColumn(Audio.AUTHOR, i);
+			queryTestWithColumn(Audio.BROADCASTER, i);
+			queryTestWithColumn(Audio.DURATION, i);
+			queryTestWithColumn(Audio.AUDIO_URL, i);
+			queryTestWithColumn(Audio.AUDIO_URI, i);
+			queryTestWithColumn(Audio.PUB_DATE, i);
+		}
+	}
+	
+	private void queryTestWithColumn(String column, int index) {
 		String[] projection = new String[]{};
-		String selection = Audio.TITLE + "=?";
-		String[] selectionArgs = new String[]{"audio" + 1};
+		String selection = column + "=?";
+		String[] selectionArgs = new String[]{column + index};
 		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
@@ -43,30 +61,42 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	}
 	
 	public void testInsert() {
+		insertTestWithColumn(Audio.TITLE);
+		insertTestWithColumn(Audio.AUTHOR);
+		insertTestWithColumn(Audio.BROADCASTER);
+		insertTestWithColumn(Audio.DURATION);
+		insertTestWithColumn(Audio.AUDIO_URL);
+		insertTestWithColumn(Audio.AUDIO_URI);
+		insertTestWithColumn(Audio.PUB_DATE);
+	}
+	
+	private void insertTestWithColumn(String column) {
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(Audio.TITLE, "audio"+(INTT_ROWS+1));
+		contentValues.put(column, column+(INTT_ROWS+1));
 		getMockContentResolver().insert(AudioProvider.CONTENT_URI, contentValues);
 		
-		String[] projection = new String[]{};
-		String selection = Audio.TITLE + "='audio" + (INTT_ROWS+1) + "'";
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, null, null);
-		
-		assertNotNull(cursor);
-		assertEquals(1, cursor.getCount());
-		
-		if (!cursor.isClosed()) {
-			cursor.close();
-		}
+		queryTestWithColumn(column, INTT_ROWS+1);
 	}
 	
 	public void testDelete() {
-		String selection = Audio.TITLE + "='audio" + 1 + "'";
+		deleteTestWithColumn(Audio.TITLE);
+		deleteTestWithColumn(Audio.AUTHOR);
+		deleteTestWithColumn(Audio.BROADCASTER);
+		deleteTestWithColumn(Audio.DURATION);
+		deleteTestWithColumn(Audio.AUDIO_URL);
+		deleteTestWithColumn(Audio.AUDIO_URI);
+		deleteTestWithColumn(Audio.PUB_DATE);
+	}
+	
+	private void deleteTestWithColumn(String column) {
+		String selection = column + "=?";
+		String[] selectionArgs = new String[]{column + 1};
 		
-		getMockContentResolver().delete(AudioProvider.CONTENT_URI, selection, null);
+		getMockContentResolver().delete(AudioProvider.CONTENT_URI, selection, selectionArgs);
 		
 		String[] projection = new String[]{};
 
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, null, null);
+		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
 		assertEquals(0, cursor.getCount());
@@ -77,25 +107,54 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	}
 	
 	public void testUpdate() {
-		String selection = Audio.TITLE + "='audio" + 1 + "'";
+		updateTestWithColumn(Audio.TITLE);
+		updateTestWithColumn(Audio.AUTHOR);
+		updateTestWithColumn(Audio.BROADCASTER);
+		updateTestWithColumn(Audio.DURATION);
+		updateTestWithColumn(Audio.AUDIO_URL);
+		updateTestWithColumn(Audio.AUDIO_URI);
+		updateTestWithColumn(Audio.PUB_DATE);
+	}
+	
+	private void updateTestWithColumn(String column) {
+		String selection = Audio._ID + "=?";
+		String[] selectionArgs = new String[]{String.valueOf(getID(column, column+1))};
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(Audio.AUDIO_URL, "http");
-		getMockContentResolver().update(AudioProvider.CONTENT_URI, contentValues, selection, null);
+		contentValues.put(column, column+(INTT_ROWS+1));
+		getMockContentResolver().update(AudioProvider.CONTENT_URI, contentValues, selection, selectionArgs);
 		
-		String[] projection = new String[]{Audio.AUDIO_URL};
+		String[] projection = new String[]{column};
 
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, null, null);
+		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
 		assertEquals(1, cursor.getCount());
 		cursor.moveToFirst();
-		int columnIndex = cursor.getColumnIndex(Audio.AUDIO_URL);
+		int columnIndex = cursor.getColumnIndex(column);
 		assertEquals(0, columnIndex);
-		assertEquals("http", cursor.getString(columnIndex));
+		assertEquals(column+(INTT_ROWS+1), cursor.getString(columnIndex));
 		
 		if (!cursor.isClosed()) {
 			cursor.close();
 		}
+	}
+	
+	private int getID(String column, String value) {
+		String selection = column + "=?";
+		String[] selectionArgs = new String[]{value};
+		String[] projection = new String[]{Audio._ID};
+		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+		assertNotNull(cursor);
+		assertEquals(1, cursor.getCount());
+		cursor.moveToFirst();
+		int columnIndex = cursor.getColumnIndex(Audio._ID);
+		assertEquals(0, columnIndex);
+		
+		int id = cursor.getInt(columnIndex);
+		if (!cursor.isClosed()) {
+			cursor.close();
+		}
+		return id;
 	}
 
 }
