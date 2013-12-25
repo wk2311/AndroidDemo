@@ -22,10 +22,10 @@ public class AudioDBHelper extends SQLiteOpenHelper {
 				Audio.TITLE + " VARCHAR, " +
 				Audio.AUTHOR + " VARCHAR, " +
 				Audio.BROADCASTER + " VARCHAR, " +
-				Audio.DURATION + " VARCHAR, " +
+				Audio.DURATION + " LONG, " +
 				Audio.AUDIO_URL + " VARCHAR, " +
 				Audio.AUDIO_URI + " VARCHAR, " + 
-				Audio.PUB_DATE + " VARCHAR" + ")");
+				Audio.PUB_DATE + " LONG" + ")");
 	}
 
 	@Override

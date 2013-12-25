@@ -2,17 +2,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <FrameLayout
+    
+    <fragment
+        android:id="@+id/tracklist_new"
+        android:name="com.justingzju.fm.fragment.TracksFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/bottomactionbar_new" />
+    
+    <fragment
+        android:id="@+id/bottomactionbar_new"
+        android:name="com.justingzju.fm.fragment.BottomActionBarFragment"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_alignParentBottom="true" >
-        
-        <fragment
-            android:id="@+id/bottomactionbar_new"
-            android:name="com.justingzju.fm.fragment.BottomActionBarFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

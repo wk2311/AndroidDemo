@@ -10,6 +10,8 @@ import android.test.ProviderTestCase2;
 public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 
 	private static final int INTT_ROWS = 10;
+	private static final int INIT_DURATION = 300;
+	private static final long INIT_PUBDATE = System.currentTimeMillis();
 
 	public AudioProviderTest() {
 		super(AudioProvider.class, AudioProvider.CONTENT_URI.getAuthority());
@@ -25,10 +27,10 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 			contentValues.put(Audio.TITLE, Audio.TITLE+i);
 			contentValues.put(Audio.AUTHOR, Audio.AUTHOR+i);
 			contentValues.put(Audio.BROADCASTER, Audio.BROADCASTER+i);
-			contentValues.put(Audio.DURATION, Audio.DURATION+i);
+			contentValues.put(Audio.DURATION, INIT_DURATION+i);
 			contentValues.put(Audio.AUDIO_URL, Audio.AUDIO_URL+i);
 			contentValues.put(Audio.AUDIO_URI, Audio.AUDIO_URI+i);
-			contentValues.put(Audio.PUB_DATE, Audio.PUB_DATE+i);
+			contentValues.put(Audio.PUB_DATE, INIT_PUBDATE+i);
 			valuesArray[i] = contentValues;
 		}
 		getMockContentResolver().bulkInsert(AudioProvider.CONTENT_URI, valuesArray);
@@ -49,7 +51,14 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	private void queryTestWithColumn(String column, int index) {
 		String[] projection = new String[]{};
 		String selection = column + "=?";
-		String[] selectionArgs = new String[]{column + index};
+		String[] selectionArgs;
+		if (column.equals(Audio.DURATION)) {
+			selectionArgs = new String[]{String.valueOf(INIT_DURATION + index)};
+		} else if (column.equals(Audio.PUB_DATE)) {
+			selectionArgs = new String[]{String.valueOf(INIT_PUBDATE + index)};
+		} else {
+			selectionArgs = new String[]{column + index};
+		}
 		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
@@ -72,7 +81,13 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	
 	private void insertTestWithColumn(String column) {
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(column, column+(INTT_ROWS+1));
+		if (column.equals(Audio.DURATION)) {
+			contentValues.put(column, INIT_DURATION+(INTT_ROWS+1));
+		} else if (column.equals(Audio.PUB_DATE)) {
+			contentValues.put(column, INIT_PUBDATE+(INTT_ROWS+1));
+		} else {
+			contentValues.put(column, column+(INTT_ROWS+1));
+		}
 		getMockContentResolver().insert(AudioProvider.CONTENT_URI, contentValues);
 		
 		queryTestWithColumn(column, INTT_ROWS+1);
@@ -90,7 +105,14 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	
 	private void deleteTestWithColumn(String column) {
 		String selection = column + "=?";
-		String[] selectionArgs = new String[]{column + 1};
+		String[] selectionArgs;
+		if (column.equals(Audio.DURATION)) {
+			selectionArgs = new String[]{String.valueOf(INIT_DURATION + 1)};
+		} else if (column.equals(Audio.PUB_DATE)) {
+			selectionArgs = new String[]{String.valueOf(INIT_PUBDATE + 1)};
+		} else {
+			selectionArgs = new String[]{column + 1};
+		}
 		
 		getMockContentResolver().delete(AudioProvider.CONTENT_URI, selection, selectionArgs);
 		
@@ -118,9 +140,24 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	
 	private void updateTestWithColumn(String column) {
 		String selection = Audio._ID + "=?";
-		String[] selectionArgs = new String[]{String.valueOf(getID(column, column+1))};
+		String oldColumnValue;
+		if (column.equals(Audio.DURATION)) {
+			oldColumnValue = String.valueOf(INIT_DURATION + 1);
+		} else if (column.equals(Audio.PUB_DATE)) {
+			oldColumnValue = String.valueOf(INIT_PUBDATE + 1);
+		} else {
+			oldColumnValue = column + 1;
+		}
+		String[] selectionArgs = new String[]{String.valueOf(getID(column, oldColumnValue))};
+		
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(column, column+(INTT_ROWS+1));
+		if (column.equals(Audio.DURATION)) {
+			contentValues.put(column, INIT_DURATION+(INTT_ROWS+1));
+		} else if (column.equals(Audio.PUB_DATE)) {
+			contentValues.put(column, INIT_PUBDATE+(INTT_ROWS+1));
+		} else {
+			contentValues.put(column, column+(INTT_ROWS+1));
+		}
 		getMockContentResolver().update(AudioProvider.CONTENT_URI, contentValues, selection, selectionArgs);
 		
 		String[] projection = new String[]{column};
@@ -132,7 +169,13 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		cursor.moveToFirst();
 		int columnIndex = cursor.getColumnIndex(column);
 		assertEquals(0, columnIndex);
-		assertEquals(column+(INTT_ROWS+1), cursor.getString(columnIndex));
+		if (column.equals(Audio.DURATION)) {
+			assertEquals(INIT_DURATION+(INTT_ROWS+1), cursor.getLong(columnIndex));
+		} else if (column.equals(Audio.PUB_DATE)) {
+			assertEquals(INIT_PUBDATE+(INTT_ROWS+1), cursor.getLong(columnIndex));
+		} else {
+			assertEquals(column+(INTT_ROWS+1), cursor.getString(columnIndex));
+		}
 		
 		if (!cursor.isClosed()) {
 			cursor.close();
