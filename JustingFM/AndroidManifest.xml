@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <service android:name=".service.DownloadService"></service>
+        <service android:name=".service.PlayService"></service>
         <provider 
             android:name="com.justingzju.fm.storage.AudioProvider"
             android:authorities="com.justingzju.fm.storage.AudioProvider"

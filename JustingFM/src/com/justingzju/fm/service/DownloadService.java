@@ -233,7 +233,7 @@ public class DownloadService extends Service {
 		return valueslist.toArray(new ContentValues[valueslist.size()]);
 	}
 
-	private long parseDuration(String time) {
+	private int parseDuration(String time) {
 		if (!time.matches("[0-9]{1,2}:[0-9]{2}")) {
 			return -1;
 		}

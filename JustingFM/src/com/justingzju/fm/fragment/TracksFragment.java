@@ -12,6 +12,8 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -19,18 +21,21 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.justingzju.fm.R;
 import com.justingzju.fm.service.DownloadService;
+import com.justingzju.fm.service.PlayService;
 import com.justingzju.fm.storage.Audio;
 import com.justingzju.fm.storage.AudioProvider;
 import com.justingzju.fm.widgets.TrackAdapter;
 import com.justingzju.util.LogUtil;
 
-public class TracksFragment extends Fragment implements LoaderCallbacks<Cursor>{
+public class TracksFragment extends Fragment implements
+		LoaderCallbacks<Cursor>, OnItemClickListener {
 
-	private static final LogUtil mLog = new LogUtil(TracksFragment.class.getSimpleName(), true);
-	
+	private static final LogUtil mLog = new LogUtil(
+			TracksFragment.class.getSimpleName(), true);
+
 	private PullToRefreshListView mListView;
 	private TrackAdapter mAdapter;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,15 +78,18 @@ public class TracksFragment extends Fragment implements LoaderCallbacks<Cursor>{
 
 			}
 		});
+		mListView.setOnItemClickListener(this);
 		return root;
 	}
-	
+
 	Handler mRefreshHandler = new Handler();
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		String sortOrder = Audio.PUB_DATE + " DESC";
-		return new CursorLoader(getActivity(), AudioProvider.CONTENT_URI, null, null, null, sortOrder);
+		// all fields of Audio is selected, or Audio(Cursor) will fail
+		return new CursorLoader(getActivity(), AudioProvider.CONTENT_URI, null,
+				null, null, sortOrder);
 	}
 
 	@Override
@@ -95,5 +103,16 @@ public class TracksFragment extends Fragment implements LoaderCallbacks<Cursor>{
 	public void onLoaderReset(Loader<Cursor> loader) {
 		mLog.v("onLoaderReset");
 		mAdapter.changeCursor(null);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+		Audio audio = new Audio(cursor);
+		getActivity().startService(
+				new Intent(getActivity(), PlayService.class).setAction(
+						PlayService.ACTION_CHANGE_AUDIO).putExtra(
+						PlayService.EXTRA_AUDIO, audio));
 	}
 }
