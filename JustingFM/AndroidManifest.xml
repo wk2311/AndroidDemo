@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.justingzju.fm"
     android:versionCode="1"
@@ -6,17 +7,19 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="15" />
-    
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
     <application
+        android:name="com.justingzju.fm.UILApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".HomePage"
+            android:name="com.justingzju.fm.activity.HomePage"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,13 +27,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.DownloadService"></service>
-        <service android:name=".service.PlayService"></service>
-        <provider 
-            android:name="com.justingzju.fm.storage.AudioProvider"
-            android:authorities="com.justingzju.fm.storage.AudioProvider"
-            android:exported="false">
+
+        <service android:name="com.justingzju.fm.service.DownloadService" >
+        </service>
+        <service android:name="com.justingzju.fm.service.PlayService" >
+        </service>
+
+        <provider
+            android:name="com.justingzju.fm.storage.PodProvider"
+            android:authorities="com.justingzju.fm.storage.PodProvider"
+            android:exported="false" >
         </provider>
+
+        <activity
+            android:name="com.justingzju.fm.v4.activity.AudioPlayer"
+            android:label="@string/title_activity_audio_player"
+            android:parentActivityName="HomePage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="HomePage" />
+        </activity>
     </application>
 
 </manifest>

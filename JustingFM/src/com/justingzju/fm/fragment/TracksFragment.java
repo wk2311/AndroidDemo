@@ -20,21 +20,33 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.justingzju.fm.R;
+import com.justingzju.fm.adapter.TrackAdapter;
+import com.justingzju.fm.service.DownloadRequest;
 import com.justingzju.fm.service.DownloadService;
 import com.justingzju.fm.service.PlayService;
 import com.justingzju.fm.storage.Audio;
-import com.justingzju.fm.storage.AudioProvider;
-import com.justingzju.fm.widgets.TrackAdapter;
+import com.justingzju.fm.storage.Feed;
+import com.justingzju.fm.storage.PodProvider;
 import com.justingzju.util.LogUtil;
 
 public class TracksFragment extends Fragment implements
 		LoaderCallbacks<Cursor>, OnItemClickListener {
+
+	public static final String TAG = TracksFragment.class.getSimpleName();
 
 	private static final LogUtil mLog = new LogUtil(
 			TracksFragment.class.getSimpleName(), true);
 
 	private PullToRefreshListView mListView;
 	private TrackAdapter mAdapter;
+
+	private Feed mFeed;
+
+	public static TracksFragment newInstance(Feed feed) {
+		TracksFragment instance = new TracksFragment();
+		instance.mFeed = feed;
+		return instance;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,53 +55,66 @@ public class TracksFragment extends Fragment implements
 				null, new String[] { Audio.TITLE, Audio.AUTHOR }, new int[] {
 						R.id.listview_item_line_one,
 						R.id.listview_item_line_two }, 0);
-		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.pull_refresh_listview, container);
-		mListView = (PullToRefreshListView) root
+		return inflater.inflate(R.layout.fragment_tracks, container, false);
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		mListView = (PullToRefreshListView) view
 				.findViewById(android.R.id.list);
 		mListView.setAdapter(mAdapter);
 
-		mListView.setOnRefreshListener(new OnRefreshListener2<ListView>() {
-
-			@Override
-			public void onPullDownToRefresh(
-					PullToRefreshBase<ListView> refreshView) {
-				Intent updateIntent = new Intent(getActivity(),
-						DownloadService.class)
-						.setAction(DownloadService.ACTION_UPDATE_PODLIST);
-				getActivity().startService(updateIntent);
-				mRefreshHandler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						mListView.onRefreshComplete();
-					}
-				}, 5000);
-			}
-
-			@Override
-			public void onPullUpToRefresh(
-					PullToRefreshBase<ListView> refreshView) {
-				// TODO Auto-generated method stub
-
-			}
-		});
 		mListView.setOnItemClickListener(this);
-		return root;
+		mListView.setOnRefreshListener(refreshListener);
 	}
 
-	Handler mRefreshHandler = new Handler();
+	private OnRefreshListener2<ListView> refreshListener = new OnRefreshListener2<ListView>() {
+
+		@Override
+		public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+			Intent updateIntent = new Intent(getActivity(),
+					DownloadService.class)
+					.setAction(DownloadService.ACTION_UPDATE_FEED);
+			updateIntent.putExtra(DownloadService.EXTRA_FEED_ID, mFeed.getId());
+			getActivity().startService(updateIntent);
+			
+			mRefreshHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mListView.onRefreshComplete();
+				}
+			}, 5000);
+		}
+
+		@Override
+		public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	private Handler mRefreshHandler = new Handler();
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		getLoaderManager().initLoader(0, null, this);
+	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		String sortOrder = Audio.PUB_DATE + " DESC";
 		// all fields of Audio is selected, or Audio(Cursor) will fail
-		return new CursorLoader(getActivity(), AudioProvider.CONTENT_URI, null,
-				null, null, sortOrder);
+		String selection = Audio.FEED + "=?";
+		String[] selectionArgs = new String[]{String.valueOf(mFeed.getId())};
+		return new CursorLoader(getActivity(), PodProvider.CONTENT_URI_AUDIOS,
+				null, selection, selectionArgs, sortOrder);
 	}
 
 	@Override
@@ -108,6 +133,7 @@ public class TracksFragment extends Fragment implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		mLog.v("onItemClick: position " + position + ", id " + id);
 		Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
 		Audio audio = new Audio(cursor);
 		getActivity().startService(

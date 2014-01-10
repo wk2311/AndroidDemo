@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- feeds to init for the first running -->
+    <feed title="小王子" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_b_xwz.xml" />
+    <feed title="民主的细节" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_b_mzdxj.xml" />
+    <feed title="好妈妈胜过好老师" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_b_hmmsghls.xml" />
+    <feed title="案藏杀机" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_c_acsj.xml" />
+    <feed title="我爱问连岳" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_z_lianyue.xml" />
+    <feed title="女声爱谁谁" link="http://www.justing.com.cn/static/podcast_ppzq/ppzq_c_nsass.xml" />
+    
+</resources>

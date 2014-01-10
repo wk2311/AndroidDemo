@@ -10,8 +10,8 @@
         android:layout_height="@dimen/listview_album_art"
         android:layout_alignParentLeft="true"
         android:layout_margin="@dimen/listview_album_margin"
-        android:src="@drawable/justpod_cn"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/feed_image" />
 
     <!-- Padding may be set on via code for some tabs -->
 

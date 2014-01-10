@@ -85,7 +85,7 @@ public class PlayService extends Service {
 	private void onAudioChange(Audio audio) {
 		mMediaPlayer.reset();
 		try {
-			mMediaPlayer.setDataSource(audio.getAudioURL());
+			mMediaPlayer.setDataSource(audio.getLink());
 			mMediaPlayer.prepareAsync();
 			mMediaPlayerPreparing = true;
 		} catch (Exception e) {
@@ -96,11 +96,11 @@ public class PlayService extends Service {
 	}
 	
 	private void notifyAudioChange(Audio audio) {
-		sendBroadcast(new Intent(BROADCAST_AUDIO_CHANGED).putExtra(EXTRA_AUDIO, audio));
+		sendStickyBroadcast(new Intent(BROADCAST_AUDIO_CHANGED).putExtra(EXTRA_AUDIO, audio));
 	}
 
 	private void notifyPlayStateChange(String playstate) {
-		sendBroadcast(new Intent(BROADCAST_PLAYSTATE_CHANGED).putExtra(EXTRA_PLAYSTATE, playstate));
+		sendStickyBroadcast(new Intent(BROADCAST_PLAYSTATE_CHANGED).putExtra(EXTRA_PLAYSTATE, playstate));
 	}
 
 	private class PlayServiceStub extends IPlayService.Stub {

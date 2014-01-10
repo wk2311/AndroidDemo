@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     
-    <fragment
-        android:id="@+id/tracklist_new"
-        android:name="com.justingzju.fm.fragment.TracksFragment"
+    <FrameLayout
+        android:id="@+id/fragment_container_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/bottomactionbar_new" />
+        android:layout_above="@+id/bottomactionbar" >
+    </FrameLayout>
     
     <fragment
-        android:id="@+id/bottomactionbar_new"
+        android:id="@+id/bottomactionbar"
         android:name="com.justingzju.fm.fragment.BottomActionBarFragment"
         android:layout_width="match_parent"
         android:layout_height="48dp"

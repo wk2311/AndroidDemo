@@ -26,6 +26,7 @@
             android:id="@+id/bottom_action_bar_album_art"
             android:layout_width="@dimen/bottom_action_bar_album_art_width_height"
             android:layout_height="@dimen/bottom_action_bar_album_art_width_height"
+            android:src="@drawable/no_art"
             android:layout_gravity="left|center"
             android:contentDescription="@string/cd_bottom_action_bar_album_art"
             android:scaleType="fitXY" />

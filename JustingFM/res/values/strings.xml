@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">Justing FM</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_home_page">HomePage</string>
-    
+
     <!-- Content descriptions for the Bottom Action Bar -->
     <string name="cd_favorite">Make this a favorite song</string>
     <string name="cd_search">Search through your music</string>
@@ -14,5 +15,13 @@
     <string name="cd_play">Play and pause</string>
     <string name="cd_next">Skip forwards</string>
     <string name="cd_shuffle">Shuffle tracks</string>
+    
+    <string name="title_activity_audio_player">Now Playing</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_pager_playlist">Playlist</string>
+    <string name="title_pager_audioplayer">AudioPlayer</string>
+
+    <string name="feed_image">feed image</string>
 
 </resources>

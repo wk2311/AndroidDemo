@@ -6,60 +6,51 @@ import android.os.Parcelable;
 
 public class Audio implements Parcelable {
 
-	public static final String _ID = "_id";
+	public static final String _ID = PodDBHelper.KEY_ID;
 	public static final String TITLE = "title";
 	public static final String AUTHOR = "author";
-	public static final String BROADCASTER = "broadcaster";
+	public static final String ANNOUNCER = "announcer";
 	public static final String DURATION = "duration";
-	public static final String AUDIO_URL = "audioURL";
-	public static final String AUDIO_URI = "audioURI";
+	public static final String LINK = "link";
+	public static final String LOCAL_URI = "localURI";
 	public static final String PUB_DATE = "pubDate";
+	public static final String FEED = "feed";
 
-	private int _id;
+	private long _id;
 	private String title;
 	private String author;
-	private String broadcaster;
+	private String announcer;
 	private int duration;
-	private String audioURL;
-	private String audioURI;
+	private String link;
+	private String localURI;
 	private long pubDate;
-
-	public Audio(int _id, String title, String author, String broadcaster,
-			int duration, String audioURL, String audioURI, long pubDate) {
-		super();
-		this._id = _id;
-		this.title = title;
-		this.author = author;
-		this.broadcaster = broadcaster;
-		this.duration = duration;
-		this.audioURL = audioURL;
-		this.audioURI = audioURI;
-		this.pubDate = pubDate;
-	}
+	private long feed;
 
 	public Audio(Parcel source) {
-		this._id = source.readInt();
+		this._id = source.readLong();
 		this.title = source.readString();
 		this.author = source.readString();
-		this.broadcaster = source.readString();
+		this.announcer = source.readString();
 		this.duration = source.readInt();
-		this.audioURL = source.readString();
-		this.audioURI = source.readString();
+		this.link = source.readString();
+		this.localURI = source.readString();
 		this.pubDate = source.readLong();
+		this.feed = source.readLong();
 	}
 	
 	public Audio(Cursor cursor) {
-		this._id = cursor.getInt(cursor.getColumnIndex(_ID));
+		this._id = cursor.getLong(cursor.getColumnIndex(_ID));
 		this.title = cursor.getString(cursor.getColumnIndex(TITLE));
 		this.author = cursor.getString(cursor.getColumnIndex(AUTHOR));
-		this.broadcaster = cursor.getString(cursor.getColumnIndex(BROADCASTER));
+		this.announcer = cursor.getString(cursor.getColumnIndex(ANNOUNCER));
 		this.duration = cursor.getInt(cursor.getColumnIndex(DURATION));
-		this.audioURL = cursor.getString(cursor.getColumnIndex(AUDIO_URL));
-		this.audioURI = cursor.getString(cursor.getColumnIndex(AUDIO_URI));
+		this.link = cursor.getString(cursor.getColumnIndex(LINK));
+		this.localURI = cursor.getString(cursor.getColumnIndex(LOCAL_URI));
 		this.pubDate = cursor.getLong(cursor.getColumnIndex(PUB_DATE));
+		this.feed = cursor.getLong(cursor.getColumnIndex(FEED));
 	}
 
-	public int get_id() {
+	public long getId() {
 		return _id;
 	}
 
@@ -71,24 +62,28 @@ public class Audio implements Parcelable {
 		return author;
 	}
 
-	public String getBroadcaster() {
-		return broadcaster;
+	public String getAnnouncer() {
+		return announcer;
 	}
 
 	public int getDuration() {
 		return duration;
 	}
 
-	public String getAudioURL() {
-		return audioURL;
+	public String getLink() {
+		return link;
 	}
 
-	public String getAudioURI() {
-		return audioURI;
+	public String getLocalURI() {
+		return localURI;
 	}
 
 	public long getPubDate() {
 		return pubDate;
+	}
+	
+	public long getFeed() {
+		return feed;
 	}
 
 	@Override
@@ -98,14 +93,15 @@ public class Audio implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(_id);
+		dest.writeLong(_id);
 		dest.writeString(title);
 		dest.writeString(author);
-		dest.writeString(broadcaster);
+		dest.writeString(announcer);
 		dest.writeInt(duration);
-		dest.writeString(audioURL);
-		dest.writeString(audioURI);
+		dest.writeString(link);
+		dest.writeString(localURI);
 		dest.writeLong(pubDate);
+		dest.writeLong(feed);
 	}
 
 	public static final Parcelable.Creator<Audio> CREATOR = new Creator<Audio>() {

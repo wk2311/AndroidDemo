@@ -1,4 +1,4 @@
-package com.justingzju.fm.widgets;
+package com.justingzju.fm.adapter;
 
 
 import com.justingzju.fm.R;
@@ -17,14 +17,14 @@ public class TrackAdapter extends SimpleCursorAdapter {
 		super(context, layout, c, from, to, flags);
 	}
 
-//	@Override
-//	public View getView(int position, View convertView, ViewGroup parent) {
-//		// TODO Auto-generated method stub
-//		final View view = super.getView(position, convertView, parent);
-//		
-//		ImageView itemImage = (ImageView) view.findViewById(R.id.listview_item_image);
-//		itemImage.setImageResource(R.drawable.justpod_cn);
-//		return view;
-//	}
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		final View view = super.getView(position, convertView, parent);
+		
+		ImageView itemImage = (ImageView) view.findViewById(R.id.listview_item_image);
+		itemImage.setVisibility(View.GONE);
+		return view;
+	}
 
 }

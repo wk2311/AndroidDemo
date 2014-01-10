@@ -1,20 +1,20 @@
 package com.justingzju.fm.storage.test;
 
 import com.justingzju.fm.storage.Audio;
-import com.justingzju.fm.storage.AudioProvider;
+import com.justingzju.fm.storage.PodProvider;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.test.ProviderTestCase2;
 
-public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
+public class PodProviderTest extends ProviderTestCase2<PodProvider> {
 
 	private static final int INTT_ROWS = 10;
 	private static final int INIT_DURATION = 300;
 	private static final long INIT_PUBDATE = System.currentTimeMillis();
 
-	public AudioProviderTest() {
-		super(AudioProvider.class, AudioProvider.CONTENT_URI.getAuthority());
+	public PodProviderTest() {
+		super(PodProvider.class, PodProvider.CONTENT_URI_AUDIOS.getAuthority());
 	}
 	
 	@Override
@@ -26,24 +26,24 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 			ContentValues contentValues = new ContentValues();
 			contentValues.put(Audio.TITLE, Audio.TITLE+i);
 			contentValues.put(Audio.AUTHOR, Audio.AUTHOR+i);
-			contentValues.put(Audio.BROADCASTER, Audio.BROADCASTER+i);
+			contentValues.put(Audio.ANNOUNCER, Audio.ANNOUNCER+i);
 			contentValues.put(Audio.DURATION, INIT_DURATION+i);
-			contentValues.put(Audio.AUDIO_URL, Audio.AUDIO_URL+i);
-			contentValues.put(Audio.AUDIO_URI, Audio.AUDIO_URI+i);
+			contentValues.put(Audio.LINK, Audio.LINK+i);
+			contentValues.put(Audio.LOCAL_URI, Audio.LOCAL_URI+i);
 			contentValues.put(Audio.PUB_DATE, INIT_PUBDATE+i);
 			valuesArray[i] = contentValues;
 		}
-		getMockContentResolver().bulkInsert(AudioProvider.CONTENT_URI, valuesArray);
+		getMockContentResolver().bulkInsert(PodProvider.CONTENT_URI_AUDIOS, valuesArray);
 	}
 
 	public void testQuery() {
 		for (int i = 0; i < INTT_ROWS; i++) {
 			queryTestWithColumn(Audio.TITLE, i);
 			queryTestWithColumn(Audio.AUTHOR, i);
-			queryTestWithColumn(Audio.BROADCASTER, i);
+			queryTestWithColumn(Audio.ANNOUNCER, i);
 			queryTestWithColumn(Audio.DURATION, i);
-			queryTestWithColumn(Audio.AUDIO_URL, i);
-			queryTestWithColumn(Audio.AUDIO_URI, i);
+			queryTestWithColumn(Audio.LINK, i);
+			queryTestWithColumn(Audio.LOCAL_URI, i);
 			queryTestWithColumn(Audio.PUB_DATE, i);
 		}
 	}
@@ -59,7 +59,7 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		} else {
 			selectionArgs = new String[]{column + index};
 		}
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+		Cursor cursor = getMockContentResolver().query(PodProvider.CONTENT_URI_AUDIOS, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
 		assertEquals(1, cursor.getCount());
@@ -72,10 +72,10 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	public void testInsert() {
 		insertTestWithColumn(Audio.TITLE);
 		insertTestWithColumn(Audio.AUTHOR);
-		insertTestWithColumn(Audio.BROADCASTER);
+		insertTestWithColumn(Audio.ANNOUNCER);
 		insertTestWithColumn(Audio.DURATION);
-		insertTestWithColumn(Audio.AUDIO_URL);
-		insertTestWithColumn(Audio.AUDIO_URI);
+		insertTestWithColumn(Audio.LINK);
+		insertTestWithColumn(Audio.LOCAL_URI);
 		insertTestWithColumn(Audio.PUB_DATE);
 	}
 	
@@ -88,7 +88,7 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		} else {
 			contentValues.put(column, column+(INTT_ROWS+1));
 		}
-		getMockContentResolver().insert(AudioProvider.CONTENT_URI, contentValues);
+		getMockContentResolver().insert(PodProvider.CONTENT_URI_AUDIOS, contentValues);
 		
 		queryTestWithColumn(column, INTT_ROWS+1);
 	}
@@ -96,10 +96,10 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	public void testDelete() {
 		deleteTestWithColumn(Audio.TITLE);
 		deleteTestWithColumn(Audio.AUTHOR);
-		deleteTestWithColumn(Audio.BROADCASTER);
+		deleteTestWithColumn(Audio.ANNOUNCER);
 		deleteTestWithColumn(Audio.DURATION);
-		deleteTestWithColumn(Audio.AUDIO_URL);
-		deleteTestWithColumn(Audio.AUDIO_URI);
+		deleteTestWithColumn(Audio.LINK);
+		deleteTestWithColumn(Audio.LOCAL_URI);
 		deleteTestWithColumn(Audio.PUB_DATE);
 	}
 	
@@ -114,11 +114,11 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 			selectionArgs = new String[]{column + 1};
 		}
 		
-		getMockContentResolver().delete(AudioProvider.CONTENT_URI, selection, selectionArgs);
+		getMockContentResolver().delete(PodProvider.CONTENT_URI_AUDIOS, selection, selectionArgs);
 		
 		String[] projection = new String[]{};
 
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+		Cursor cursor = getMockContentResolver().query(PodProvider.CONTENT_URI_AUDIOS, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
 		assertEquals(0, cursor.getCount());
@@ -131,10 +131,10 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 	public void testUpdate() {
 		updateTestWithColumn(Audio.TITLE);
 		updateTestWithColumn(Audio.AUTHOR);
-		updateTestWithColumn(Audio.BROADCASTER);
+		updateTestWithColumn(Audio.ANNOUNCER);
 		updateTestWithColumn(Audio.DURATION);
-		updateTestWithColumn(Audio.AUDIO_URL);
-		updateTestWithColumn(Audio.AUDIO_URI);
+		updateTestWithColumn(Audio.LINK);
+		updateTestWithColumn(Audio.LOCAL_URI);
 		updateTestWithColumn(Audio.PUB_DATE);
 	}
 	
@@ -158,11 +158,11 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		} else {
 			contentValues.put(column, column+(INTT_ROWS+1));
 		}
-		getMockContentResolver().update(AudioProvider.CONTENT_URI, contentValues, selection, selectionArgs);
+		getMockContentResolver().update(PodProvider.CONTENT_URI_AUDIOS, contentValues, selection, selectionArgs);
 		
 		String[] projection = new String[]{column};
 
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+		Cursor cursor = getMockContentResolver().query(PodProvider.CONTENT_URI_AUDIOS, projection, selection, selectionArgs, null);
 		
 		assertNotNull(cursor);
 		assertEquals(1, cursor.getCount());
@@ -186,7 +186,7 @@ public class AudioProviderTest extends ProviderTestCase2<AudioProvider> {
 		String selection = column + "=?";
 		String[] selectionArgs = new String[]{value};
 		String[] projection = new String[]{Audio._ID};
-		Cursor cursor = getMockContentResolver().query(AudioProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+		Cursor cursor = getMockContentResolver().query(PodProvider.CONTENT_URI_AUDIOS, projection, selection, selectionArgs, null);
 		assertNotNull(cursor);
 		assertEquals(1, cursor.getCount());
 		cursor.moveToFirst();

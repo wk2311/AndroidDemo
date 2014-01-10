@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <ImageView
+        android:id="@+id/half_artist_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/no_art"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/feed_image" />
+    
+	<LinearLayout
+        android:id="@+id/half_artist_info_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+           android:layout_alignBottom="@+id/half_artist_image"
+        android:background="@color/transparent_black"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/gridview_item_ccontainer_padding_left"
+        android:paddingBottom="@dimen/gridview_item_ccontainer_padding_left"
+	    android:paddingLeft="@dimen/gridview_item_ccontainer_padding_left"
+       	android:paddingRight="@dimen/gridview_item_ccontainer_padding_right">
+        <TextView
+            android:id="@+id/half_artist_image_text_line_one"
+            android:text="line one"
+            style="@style/GridviewShadowedText"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/half_artist_image_text_line_two"
+            android:text="line two"
+            style="@style/GridviewShadowedText"/>
+    </LinearLayout>
+    
+	<FrameLayout
+	    android:id="@+id/fragment_container_tracks"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_below="@+id/half_artist_image" >
+	</FrameLayout>
+
+</RelativeLayout>

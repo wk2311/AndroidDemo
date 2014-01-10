@@ -120,17 +120,19 @@
 
     <!-- AppWidgdt 4x1 -->
     <dimen name="four_by_one_album_art_width">90dp</dimen>
-    
+
     <!-- AppWidget 4x2 -->
     <dimen name="four_by_two_height">180dp</dimen>
     <dimen name="four_by_two_control_height">55dp</dimen>
     <dimen name="four_by_two_album_art_width">135dp</dimen>
-    
+
     <!-- PullToRefresh -->
     <dimen name="indicator_right_padding">10dp</dimen>
     <dimen name="indicator_corner_radius">12dp</dimen>
     <dimen name="indicator_internal_padding">4dp</dimen>
     <dimen name="header_footer_left_right_padding">24dp</dimen>
     <dimen name="header_footer_top_bottom_padding">12dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 
 </resources>
