@@ -15,7 +15,8 @@ public class Audio implements Parcelable {
 	public static final String LOCAL_URI = "localURI";
 	public static final String PUB_DATE = "pubDate";
 	public static final String FEED = "feed";
-
+	public static final String SUMMARY = "summary";
+	
 	private long _id;
 	private String title;
 	private String author;
@@ -25,6 +26,7 @@ public class Audio implements Parcelable {
 	private String localURI;
 	private long pubDate;
 	private long feed;
+	private String summary;
 
 	public Audio(Parcel source) {
 		this._id = source.readLong();
@@ -36,6 +38,7 @@ public class Audio implements Parcelable {
 		this.localURI = source.readString();
 		this.pubDate = source.readLong();
 		this.feed = source.readLong();
+		this.summary = source.readString();
 	}
 	
 	public Audio(Cursor cursor) {
@@ -48,6 +51,7 @@ public class Audio implements Parcelable {
 		this.localURI = cursor.getString(cursor.getColumnIndex(LOCAL_URI));
 		this.pubDate = cursor.getLong(cursor.getColumnIndex(PUB_DATE));
 		this.feed = cursor.getLong(cursor.getColumnIndex(FEED));
+		this.summary = cursor.getString(cursor.getColumnIndex(SUMMARY));
 	}
 
 	public long getId() {
@@ -86,6 +90,10 @@ public class Audio implements Parcelable {
 		return feed;
 	}
 
+	public String getSummary() {
+		return summary;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -102,6 +110,7 @@ public class Audio implements Parcelable {
 		dest.writeString(localURI);
 		dest.writeLong(pubDate);
 		dest.writeLong(feed);
+		dest.writeString(summary);
 	}
 
 	public static final Parcelable.Creator<Audio> CREATOR = new Creator<Audio>() {

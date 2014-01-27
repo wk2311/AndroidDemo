@@ -21,6 +21,7 @@
 
     <string name="title_pager_playlist">Playlist</string>
     <string name="title_pager_audioplayer">AudioPlayer</string>
+    <string name="title_pager_audiosummary">AudioSummary</string>
 
     <string name="feed_image">feed image</string>
 

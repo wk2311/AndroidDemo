@@ -9,6 +9,7 @@ import com.justingzju.fm.R.menu;
 import com.justingzju.fm.R.string;
 import com.justingzju.fm.v4.fragment.AudioPlayerFragment;
 import com.justingzju.fm.v4.fragment.PlaylistFragment;
+import com.justingzju.fm.v4.fragment.SummaryFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -93,6 +94,7 @@ public class AudioPlayer extends FragmentActivity {
 
 		private static final int PAGER_PLAYLIST = 0;
 		private static final int PAGER_AUDIOPLAYER = 1;
+		private static final int PAGER_SUMMARY = 2;
 
 		public PlayerPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -108,6 +110,8 @@ public class AudioPlayer extends FragmentActivity {
 				return new PlaylistFragment();
 			case PAGER_AUDIOPLAYER:
 				return new AudioPlayerFragment();
+			case PAGER_SUMMARY:
+				return new SummaryFragment();
 			default:
 				return null;
 			}
@@ -115,7 +119,7 @@ public class AudioPlayer extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			return 2;
+			return 3;
 		}
 
 		@Override
@@ -126,6 +130,8 @@ public class AudioPlayer extends FragmentActivity {
 				return getString(R.string.title_pager_playlist).toUpperCase(l);
 			case PAGER_AUDIOPLAYER:
 				return getString(R.string.title_pager_audioplayer).toUpperCase(l);
+			case PAGER_SUMMARY:
+				return getString(R.string.title_pager_audiosummary).toUpperCase(l);
 			}
 			return null;
 		}

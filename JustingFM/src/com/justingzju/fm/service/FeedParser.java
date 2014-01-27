@@ -55,7 +55,9 @@ public class FeedParser {
                     	values.put(Audio.DURATION, parseDuration(parser.nextText()));
                     } else if (name.equalsIgnoreCase("enclosure")){
                     	values.put(Audio.LINK, parser.getAttributeValue(null, "url"));
-                    }
+                    } else if (name.equalsIgnoreCase("summary")) {
+                    	values.put(Audio.SUMMARY, parser.nextText());
+					}
 				}
 				break;
 			case XmlPullParser.END_TAG:

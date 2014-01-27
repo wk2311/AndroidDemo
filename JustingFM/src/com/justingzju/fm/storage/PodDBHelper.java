@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class PodDBHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "Podcast.db";
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 
 	public static final String TABLE_NAME_FEEDS = "Feeds";
 	public static final String TABLE_NAME_AUDIOS = "Audios";
@@ -46,7 +46,7 @@ public class PodDBHelper extends SQLiteOpenHelper {
 			+ Audio.LOCAL_URI
 			+ " TEXT, "
 			+ Audio.PUB_DATE
-			+ " LONG," + Audio.FEED + " LONG" + ")";
+			+ " LONG," + Audio.FEED + " LONG," + Audio.SUMMARY + " TEXT" + ")";
 
 	public PodDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
