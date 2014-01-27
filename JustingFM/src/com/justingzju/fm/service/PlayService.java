@@ -3,10 +3,12 @@ package com.justingzju.fm.service;
 import java.io.IOException;
 
 import com.justingzju.fm.storage.Audio;
+import com.justingzju.fm.storage.PodProvider;
 import com.justingzju.util.LogUtil;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.IBinder;
@@ -40,6 +42,8 @@ public class PlayService extends Service {
 
 	public boolean mMediaPlayerPreparing = false;
 
+	private Cursor mAudioCursor = null;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -60,6 +64,9 @@ public class PlayService extends Service {
 	@Override
 	public void onDestroy() {
 		mMediaPlayer.release();
+		if (mAudioCursor != null) {
+			mAudioCursor.close();
+		}
 		super.onDestroy();
 	}
 
@@ -83,18 +90,55 @@ public class PlayService extends Service {
 	}
 
 	private void onAudioChange(Audio audio) {
+		if (mAudioCursor!=null && audio.getId()==mAudioCursor.getInt(mAudioCursor.getColumnIndex(Audio._ID))) {
+			return;
+		}
+		alterCursor(audio);
+		changeAudio(audio);
+	}
+
+	private void changeAudio(Audio audio) {
 		mMediaPlayer.reset();
 		try {
 			mMediaPlayer.setDataSource(audio.getLink());
 			mMediaPlayer.prepareAsync();
 			mMediaPlayerPreparing = true;
+			notifyAudioChange(audio);
 		} catch (Exception e) {
 			e.printStackTrace();
+			notifyPlayStateChange(PLAYSTATE_PAUSED);
 			return;
 		}
-		notifyAudioChange(audio);
 	}
 	
+	private void alterCursor(Audio audio) {
+		if (mAudioCursor != null && audio.getFeed()==mAudioCursor.getInt(mAudioCursor.getColumnIndex(Audio.FEED))) {
+			moveCursor(audio.getId());
+		} else {
+			if (mAudioCursor != null) {
+				mAudioCursor.close();
+			}
+			
+			// all fields of Audio is selected, or Audio(Cursor) will fail
+			String selection = Audio.FEED + "=?";
+			String[] selectionArgs = new String[]{String.valueOf(audio.getFeed())};
+			String sortOrder = Audio.PUB_DATE + " ASC";
+			mAudioCursor = getContentResolver().query(PodProvider.CONTENT_URI_AUDIOS, null, selection, selectionArgs, sortOrder);
+			
+			moveCursor(audio.getId());
+		}
+	}
+
+	private void moveCursor(long audioId) {
+		mAudioCursor.moveToFirst();
+		while (!mAudioCursor.isAfterLast()) {
+			if (audioId == mAudioCursor.getInt(mAudioCursor.getColumnIndex(Audio._ID))) {
+				break;
+			}
+			mAudioCursor.moveToNext();
+		}
+	}
+
 	private void notifyAudioChange(Audio audio) {
 		sendStickyBroadcast(new Intent(BROADCAST_AUDIO_CHANGED).putExtra(EXTRA_AUDIO, audio));
 	}
@@ -121,14 +165,28 @@ public class PlayService extends Service {
 
 		@Override
 		public void prev() throws RemoteException {
-			// TODO Auto-generated method stub
-
+			if (mAudioCursor == null) {
+				return;
+			}
+			if (mAudioCursor.isFirst()) {
+				mAudioCursor.moveToLast();
+			} else {
+				mAudioCursor.moveToPrevious();
+			}
+			changeAudio(new Audio(mAudioCursor));
 		}
 
 		@Override
 		public void next() throws RemoteException {
-			// TODO Auto-generated method stub
-
+			if (mAudioCursor == null) {
+				return;
+			}
+			if (mAudioCursor.isLast()) {
+				mAudioCursor.moveToFirst();
+			} else {
+				mAudioCursor.moveToNext();
+			}
+			changeAudio(new Audio(mAudioCursor));
 		}
 
 		@Override
