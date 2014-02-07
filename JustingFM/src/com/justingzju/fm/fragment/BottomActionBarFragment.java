@@ -1,17 +1,15 @@
 package com.justingzju.fm.fragment;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,17 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.justingzju.fm.R;
-import com.justingzju.fm.service.LoadImageTask;
 import com.justingzju.fm.service.PlayService;
-import com.justingzju.fm.service.PlayUtil;
+import com.justingzju.fm.service.PlayService.PlayStub;
 import com.justingzju.fm.storage.Audio;
-import com.justingzju.fm.storage.PodProvider;
 import com.justingzju.fm.storage.Feed;
 import com.justingzju.fm.v4.activity.AudioPlayer;
-import com.justingzju.fm.v4.fragment.PlaylistFragment;
+import com.justingzju.util.ImageUtil;
 import com.justingzju.util.LogUtil;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class BottomActionBarFragment extends Fragment implements
 		OnClickListener {
@@ -46,6 +40,8 @@ public class BottomActionBarFragment extends Fragment implements
 	private ImageButton mPlay;
 	private ImageButton mPrev;
 	private ImageButton mNext;
+
+	private PlayStub mPlayStub;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,21 +75,34 @@ public class BottomActionBarFragment extends Fragment implements
 	@Override
 	public void onStart() {
 		super.onStart();
+		getActivity().bindService(new Intent(getActivity(), PlayService.class), mConnection, Service.BIND_AUTO_CREATE);
+
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(PlayService.BROADCAST_AUDIO_CHANGED);
 		filter.addAction(PlayService.BROADCAST_PLAYSTATE_CHANGED);
 		getActivity().registerReceiver(mReceiver, filter);
-
-		PlayUtil.startAndBindService(getActivity());
 	}
 
 	@Override
 	public void onStop() {
-		PlayUtil.unbindService(getActivity());
-
 		getActivity().unregisterReceiver(mReceiver);
+
+		getActivity().unbindService(mConnection);
 		super.onStop();
 	}
+	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mPlayStub = null;
+		}
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mPlayStub = (PlayStub) service;
+		}
+	};
 
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -103,7 +112,9 @@ public class BottomActionBarFragment extends Fragment implements
 			if (action.equals(PlayService.BROADCAST_AUDIO_CHANGED)) {
 				Audio audio = intent
 						.getParcelableExtra(PlayService.EXTRA_AUDIO);
-				onAudioChange(audio);
+				Feed feed = intent
+						.getParcelableExtra(PlayService.EXTRA_FEED);
+				onAudioChange(audio, feed);
 			} else if (action.equals(PlayService.BROADCAST_PLAYSTATE_CHANGED)) {
 				String playstate = intent
 						.getStringExtra(PlayService.EXTRA_PLAYSTATE);
@@ -113,8 +124,8 @@ public class BottomActionBarFragment extends Fragment implements
 
 	};
 	
-	private void onAudioChange(Audio audio) {
-		new LoadImageTask(getActivity(), mTrackImage).execute(audio);
+	private void onAudioChange(Audio audio, Feed feed) {
+		ImageUtil.displayImage(feed.getImageLink(), mTrackImage);
 		mTrackName.setText(audio.getTitle());
 		mArtistName.setText(audio.getAuthor());
 		onPlayStateChange(PlayService.PLAYSTATE_PAUSED);
@@ -137,11 +148,11 @@ public class BottomActionBarFragment extends Fragment implements
 		}
 		try {
 			if (v.equals(mPlay)) {
-				PlayUtil.mService.playOrPause();
+				mPlayStub.playOrPause();
 			} else if (v.equals(mPrev)) {
-				PlayUtil.mService.prev();
+				mPlayStub.prev();
 			} else if (v.equals(mNext)) {
-				PlayUtil.mService.next();
+				mPlayStub.next();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

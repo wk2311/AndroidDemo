@@ -1,19 +1,16 @@
 package com.justingzju.fm.fragment;
 
-import com.justingzju.fm.R;
-import com.justingzju.fm.service.LoadImageTask;
-import com.justingzju.fm.storage.Feed;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.justingzju.fm.R;
+import com.justingzju.fm.storage.Feed;
+import com.justingzju.util.ImageUtil;
 
 public class FeedDetailFragment extends Fragment {
 
@@ -59,7 +56,7 @@ public class FeedDetailFragment extends Fragment {
 		textVeiwOne.setText(mFeed.getTitle());
 		textVeiwTwo.setText(mFeed.getOwner());
 		
-		new LoadImageTask(getActivity(), imageView).execute(mFeed);
+		ImageUtil.displayImage(mFeed.getImageLink(), imageView);
 	}
 
 	@Override

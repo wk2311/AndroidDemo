@@ -84,15 +84,17 @@ public class FeedsFragment extends Fragment implements LoaderCallbacks<Cursor>,
 		@Override
 		protected Void doInBackground(Void... params) {
 			if (isFeedsEmpty()) {
-				getActivity()
-						.getContentResolver()
-						.insert(PodProvider.CONTENT_URI_FEEDS,
-								new Feed(
-										"静雅思听-中文选集",
-										"静雅思听",
-										"http://www.justing.com.cn:8081/podcast/podxml/free/justing_free.xml",
-										"http://www.justing.com.cn/static/podcastimg/justpod_cn.jpg")
-										.getContentValues());
+				ContentValues contentValues = new ContentValues();
+				contentValues.put(Feed.TITLE, "静雅思听-中文选集");
+				contentValues.put(Feed.OWNER, "静雅思听");
+				contentValues
+						.put(Feed.LINK,
+								"http://www.justing.com.cn:8081/podcast/podxml/free/justing_free.xml");
+				contentValues
+						.put(Feed.IMAGE_LINK,
+								"http://www.justing.com.cn/static/podcastimg/justpod_cn.jpg");
+				getActivity().getContentResolver().insert(
+						PodProvider.CONTENT_URI_FEEDS, contentValues);
 				try {
 					String[] feedLinks = loadInitFeedLink();
 					Intent addIntent = new Intent(

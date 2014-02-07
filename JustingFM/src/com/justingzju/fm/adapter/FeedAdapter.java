@@ -1,18 +1,15 @@
 package com.justingzju.fm.adapter;
 
-import com.justingzju.fm.R;
-import com.justingzju.fm.storage.Feed;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
+
+import com.justingzju.fm.R;
+import com.justingzju.fm.storage.Feed;
+import com.justingzju.util.ImageUtil;
 
 public class FeedAdapter extends SimpleCursorAdapter {
 
@@ -28,8 +25,7 @@ public class FeedAdapter extends SimpleCursorAdapter {
 		Cursor cursor = (Cursor) getItem(position);
 		String imageLink = cursor.getString(cursor.getColumnIndex(Feed.IMAGE_LINK));
 		ImageView imageView = (ImageView) view.findViewById(R.id.gridview_image);
-		DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory().build();
-		ImageLoader.getInstance().displayImage(imageLink, imageView, options);
+		ImageUtil.displayImage(imageLink, imageView);
 		
 		return view;
 	}

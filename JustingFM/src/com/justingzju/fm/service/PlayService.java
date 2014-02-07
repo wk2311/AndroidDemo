@@ -1,8 +1,10 @@
 package com.justingzju.fm.service;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import com.justingzju.fm.storage.Audio;
+import com.justingzju.fm.storage.Feed;
 import com.justingzju.fm.storage.PodProvider;
 import com.justingzju.util.LogUtil;
 
@@ -10,11 +12,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-public class PlayService extends Service {
+public class PlayService extends Service implements OnPreparedListener, OnBufferingUpdateListener {
 
 	private static final LogUtil mLog = new LogUtil(
 			PlayService.class.getSimpleName(), true);
@@ -30,6 +34,8 @@ public class PlayService extends Service {
 
 	public static final String EXTRA_AUDIO = Audio.class.getName();
 
+	public static final String EXTRA_FEED = Feed.class.getName();
+
 	public static final String EXTRA_PLAYSTATE = "playstate";
 
 	public static final String PLAYSTATE_PAUSED = "playstate_paused";
@@ -38,27 +44,19 @@ public class PlayService extends Service {
 
 	private MediaPlayer mMediaPlayer = new MediaPlayer();
 
-	private PlayServiceStub mBinder = new PlayServiceStub();
+	private PlayStub mBinder = new PlayStub();
 
 	public boolean mMediaPlayerPreparing = false;
 
 	private Cursor mAudioCursor = null;
 
+	private int mBufferingPercent = 0;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-
-			@Override
-			public void onPrepared(MediaPlayer mp) {
-				mMediaPlayerPreparing = false;
-				try {
-					mBinder.playOrPause();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		mMediaPlayer.setOnPreparedListener(this);
+		mMediaPlayer.setOnBufferingUpdateListener(this);
 	}
 
 	@Override
@@ -140,17 +138,41 @@ public class PlayService extends Service {
 	}
 
 	private void notifyAudioChange(Audio audio) {
-		sendStickyBroadcast(new Intent(BROADCAST_AUDIO_CHANGED).putExtra(EXTRA_AUDIO, audio));
+		Cursor cursor = getContentResolver().query(PodProvider.CONTENT_URI_FEEDS, null, Feed._ID + "=?", new String[]{String.valueOf(audio.getFeed())}, null);
+		Feed feed;
+		if (cursor == null || cursor.getCount() <= 0) {
+			feed = null;
+		} else {
+			cursor.moveToFirst();
+			feed = new Feed(cursor);
+		}
+		if (cursor != null) {
+			cursor.close();
+		}
+		sendStickyBroadcast(new Intent(BROADCAST_AUDIO_CHANGED).putExtra(EXTRA_AUDIO, audio).putExtra(EXTRA_FEED, feed));
 	}
 
 	private void notifyPlayStateChange(String playstate) {
 		sendStickyBroadcast(new Intent(BROADCAST_PLAYSTATE_CHANGED).putExtra(EXTRA_PLAYSTATE, playstate));
 	}
 
-	private class PlayServiceStub extends IPlayService.Stub {
+	@Override
+	public void onBufferingUpdate(MediaPlayer mp, int percent) {
+		mBufferingPercent = percent;
+	}
 
-		@Override
-		public void playOrPause() throws RemoteException {
+	@Override
+	public void onPrepared(MediaPlayer arg0) {
+		mMediaPlayerPreparing = false;
+		mBinder.playOrPause();
+	}
+
+	public class PlayStub extends Binder {
+
+		public void playOrPause() {
+			if (mAudioCursor == null) {
+				return;
+			}
 			if (mMediaPlayer.isPlaying()) {
 				mMediaPlayer.pause();
 				notifyPlayStateChange( PLAYSTATE_PAUSED);
@@ -163,8 +185,7 @@ public class PlayService extends Service {
 			}
 		}
 
-		@Override
-		public void prev() throws RemoteException {
+		public void prev() {
 			if (mAudioCursor == null) {
 				return;
 			}
@@ -176,8 +197,7 @@ public class PlayService extends Service {
 			changeAudio(new Audio(mAudioCursor));
 		}
 
-		@Override
-		public void next() throws RemoteException {
+		public void next() {
 			if (mAudioCursor == null) {
 				return;
 			}
@@ -188,10 +208,26 @@ public class PlayService extends Service {
 			}
 			changeAudio(new Audio(mAudioCursor));
 		}
+		
+		public int getCurrentPosition() {
+			if (mAudioCursor == null) {
+				return 0;
+			}
+			return mMediaPlayer.getCurrentPosition();
+		}
+		
+		public int getBufferingPercent() {
+			if (mAudioCursor == null) {
+				return 0;
+			}
+			return mBufferingPercent;
+		}
 
-		@Override
-		public boolean isPlaying() throws RemoteException {
-			return mMediaPlayer.isPlaying();
+		public int getDuration() {
+			if (mAudioCursor == null) {
+				return 0;
+			}
+			return mMediaPlayer.getDuration();
 		}
 
 	}

@@ -40,8 +40,8 @@ public class DownloadService extends Service {
 
 	public static final String ACTION_SUBMIT_DOWNLOADS = DownloadService.class
 			.getName() + ".submit_downloads";
-	public static final String ACTION_INIT_FEED = "init_feed";
-
+	public static final String ACTION_INIT_FEED = DownloadService.class
+			.getName() + "init_feed";
 	public static final String ACTION_UPDATE_FEED = DownloadService.class
 			.getName() + ".update_feed";
 
@@ -101,15 +101,15 @@ public class DownloadService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		final String action = intent.getAction();
-		if (action.equals(ACTION_SUBMIT_DOWNLOADS)) {
+		if (ACTION_SUBMIT_DOWNLOADS.equals(action)) {
 //			final ArrayList<DownloadRequest> requests = intent
 //					.getParcelableArrayListExtra(EXTRA_DOWNLOAD_REQUEST);
 //			onDownloadSubmit(requests);
-		} else if (action.equals(ACTION_UPDATE_FEED)) {
+		} else if (ACTION_UPDATE_FEED.equals(action)) {
 			final long feedId = intent.getLongExtra(EXTRA_FEED_ID, INVALID_ID);
 			new UpdateFeedTask().execute(ContentUris.withAppendedId(
 					PodProvider.CONTENT_URI_FEEDS, feedId));
-		} else if (action.equals(ACTION_INIT_FEED)) {
+		} else if (ACTION_INIT_FEED.equals(action)) {
 			final String[] feedLinks = intent.getStringArrayExtra(EXTRA_FEED_LINK);
 			new AddFeedTask().execute(feedLinks);
 		}
