@@ -42,10 +42,10 @@
         <activity
             android:name="com.justingzju.fm.v4.activity.AudioPlayer"
             android:label="@string/title_activity_audio_player"
-            android:parentActivityName="HomePage" >
+            android:parentActivityName="com.justingzju.fm.activity.HomePage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="HomePage" />
+                android:value="com.justingzju.fm.activity.HomePage" />
         </activity>
     </application>
 

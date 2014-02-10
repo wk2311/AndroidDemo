@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
@@ -95,7 +96,7 @@ public class TracksFragment extends Fragment implements
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
 			// TODO Auto-generated method stub
-
+			Toast.makeText(getActivity(), "pull up to refresh", Toast.LENGTH_SHORT).show();
 		}
 	};
 
