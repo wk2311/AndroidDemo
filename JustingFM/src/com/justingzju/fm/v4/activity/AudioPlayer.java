@@ -32,6 +32,7 @@ import com.justingzju.fm.storage.Audio;
 import com.justingzju.fm.v4.fragment.AudioPlayerFragment;
 import com.justingzju.fm.v4.fragment.PlaylistFragment;
 import com.justingzju.fm.v4.fragment.SummaryFragment;
+import com.justingzju.fm.v4.fragment.TracksFragment;
 import com.viewpagerindicator.UnderlinePageIndicator;
 
 public class AudioPlayer extends FragmentActivity implements OnClickListener {
@@ -177,7 +178,7 @@ public class AudioPlayer extends FragmentActivity implements OnClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.audio_player, menu);
+//		getMenuInflater().inflate(R.menu.audio_player, menu);
 		return true;
 	}
 

@@ -1,28 +1,34 @@
-package com.justingzju.fm.fragment;
+package com.justingzju.fm.v4.fragment;
 
-import android.app.Fragment;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
+import static com.justingzju.util.Constant.INVALID_ID;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
+import android.content.IntentFilter;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.justingzju.fm.R;
 import com.justingzju.fm.adapter.TrackAdapter;
-import com.justingzju.fm.service.DownloadRequest;
 import com.justingzju.fm.service.DownloadService;
 import com.justingzju.fm.service.PlayService;
 import com.justingzju.fm.storage.Audio;
@@ -38,24 +44,33 @@ public class TracksFragment extends Fragment implements
 	private static final LogUtil mLog = new LogUtil(
 			TracksFragment.class.getSimpleName(), true);
 
+	private static final int NUM_PER_PAGE = 20;
+
+	protected static final int LOADER_TRACK_LIST = 0x00;
+
+	private static final String PREFERENCE_LIMIT = "limit";
+
 	private PullToRefreshListView mListView;
 	private TrackAdapter mAdapter;
+	
+	protected long mFeedId = INVALID_ID;
 
-	private Feed mFeed;
+	private int mFeedLimit;
 
-	public static TracksFragment newInstance(Feed feed) {
+	private Mode mMode = Mode.DISABLED;
+
+	public static TracksFragment newInstance(long feedId, Mode mode) {
 		TracksFragment instance = new TracksFragment();
-		instance.mFeed = feed;
+		instance.mFeedId = feedId;
+		instance.mMode  = mode;
 		return instance;
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAdapter = new TrackAdapter(getActivity(), R.layout.listview_items,
-				null, new String[] { Audio.TITLE, Audio.AUTHOR }, new int[] {
-						R.id.listview_item_line_one,
-						R.id.listview_item_line_two }, 0);
+		mLog.i("onCreate");
+		mFeedLimit = getActivity().getSharedPreferences(TracksFragment.PREFERENCE_LIMIT, Context.MODE_PRIVATE).getInt(String.valueOf(mFeedId), NUM_PER_PAGE);
 	}
 
 	@Override
@@ -68,11 +83,16 @@ public class TracksFragment extends Fragment implements
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mListView = (PullToRefreshListView) view
-				.findViewById(android.R.id.list);
-		mListView.setAdapter(mAdapter);
-
+				.findViewById(R.id.track_list);
 		mListView.setOnItemClickListener(this);
+		mListView.setMode(mMode);
 		mListView.setOnRefreshListener(refreshListener);
+		
+		mAdapter = new TrackAdapter(getActivity(), R.layout.listview_items,
+				null, new String[] { Audio.TITLE, Audio.AUTHOR }, new int[] {
+						R.id.listview_item_line_one,
+						R.id.listview_item_line_two }, 0);
+		mListView.setAdapter(mAdapter);
 	}
 
 	private OnRefreshListener2<ListView> refreshListener = new OnRefreshListener2<ListView>() {
@@ -82,7 +102,7 @@ public class TracksFragment extends Fragment implements
 			Intent updateIntent = new Intent(getActivity(),
 					DownloadService.class)
 					.setAction(DownloadService.ACTION_UPDATE_FEED);
-			updateIntent.putExtra(DownloadService.EXTRA_FEED_ID, mFeed.getId());
+			updateIntent.putExtra(DownloadService.EXTRA_FEED_ID, mFeedId);
 			getActivity().startService(updateIntent);
 			
 			mRefreshHandler.postDelayed(new Runnable() {
@@ -95,8 +115,10 @@ public class TracksFragment extends Fragment implements
 
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-			// TODO Auto-generated method stub
-			Toast.makeText(getActivity(), "pull up to refresh", Toast.LENGTH_SHORT).show();
+			mFeedLimit += NUM_PER_PAGE;
+			Editor editor = getActivity().getSharedPreferences(TracksFragment.PREFERENCE_LIMIT, Context.MODE_PRIVATE).edit();
+			editor.putInt(String.valueOf(mFeedId), mFeedLimit).commit();
+			getLoaderManager().restartLoader(LOADER_TRACK_LIST, null, TracksFragment.this);
 		}
 	};
 
@@ -105,17 +127,17 @@ public class TracksFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		getLoaderManager().initLoader(0, null, this);
+		getLoaderManager().initLoader(LOADER_TRACK_LIST, null, this);
 	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		String sortOrder = Audio.PUB_DATE + " DESC";
-		// all fields of Audio is selected, or Audio(Cursor) will fail
-		String selection = Audio.FEED + "=?";
-		String[] selectionArgs = new String[]{String.valueOf(mFeed.getId())};
+		String mSelection = Audio.FEED + "=?";
+		String[] mSelectionArgs = new String[]{String.valueOf(mFeedId)};
+		String mSortOrder = Audio.PUB_DATE + " DESC";
+		String mSortLimit = (mFeedLimit > 0)? " LIMIT " + mFeedLimit : "";
 		return new CursorLoader(getActivity(), PodProvider.CONTENT_URI_AUDIOS,
-				null, selection, selectionArgs, sortOrder);
+				null, mSelection, mSelectionArgs, mSortOrder + mSortLimit);
 	}
 
 	@Override

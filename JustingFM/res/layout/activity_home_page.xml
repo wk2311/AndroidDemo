@@ -13,7 +13,7 @@
     
     <fragment
         android:id="@+id/bottomactionbar"
-        android:name="com.justingzju.fm.fragment.BottomActionBarFragment"
+        android:name="com.justingzju.fm.v4.fragment.BottomActionBarFragment"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true" />

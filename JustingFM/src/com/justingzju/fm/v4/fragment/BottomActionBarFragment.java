@@ -1,6 +1,5 @@
-package com.justingzju.fm.fragment;
+package com.justingzju.fm.v4.fragment;
 
-import android.app.Fragment;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;

@@ -24,6 +24,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -55,16 +57,25 @@ public class DownloadService extends Service {
 	/**
 	 * the number of audio to insert when mLastUpdateTime is INVALID_TIME
 	 */
-	private static final int MAX_INIT_NUM = 20;
+	private static final int MAX_INIT_NUM = 200;
 
 	private DownloadManager mDownloadManager;
 
 	private SparseArray<DownloadRequest> mRequestArray = new SparseArray<DownloadRequest>();
 
+	private HandlerThread mWorkThread;
+
+	private Handler mWorkHandler;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mLog.v("onCreate");
+		
+		mWorkThread = new HandlerThread("DownlaodWorkThread");
+		mWorkThread.start();
+		mWorkHandler = new Handler(mWorkThread.getLooper());
+		
 		IntentFilter filter = new IntentFilter(
 				DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 		mDownloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
@@ -74,6 +85,8 @@ public class DownloadService extends Service {
 	@Override
 	public void onDestroy() {
 		unregisterReceiver(mDownloadReceiver);
+		
+		mWorkThread.quit();
 		mLog.v("onDestroy");
 		super.onDestroy();
 	}
@@ -84,10 +97,10 @@ public class DownloadService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			final String action = intent.getAction();
 			if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
-				final long downloadId = intent.getLongExtra(
+				final int downloadId = (int) intent.getLongExtra(
 						DownloadManager.EXTRA_DOWNLOAD_ID, INVALID_ID);
 				mLog.v("download id " + downloadId + " complete");
-				onDownloadComplete((int) downloadId);
+				onDownloadComplete(downloadId);
 			}
 		}
 
@@ -260,10 +273,20 @@ public class DownloadService extends Service {
 	}
 
 	private void onDownloadComplete(int downloadId) {
-		DownloadRequest request = mRequestArray.get(downloadId);
+		final DownloadRequest request = mRequestArray.get(downloadId);
 		if (request != null) {
-			request.onDownloadComplete();
-			mRequestArray.delete(downloadId);
+			final int id = downloadId;
+			mWorkHandler.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					request.onDownloadComplete();
+					mRequestArray.delete(id);
+					if (mRequestArray.size() <= 0) {
+						stopSelf();
+					}
+				}
+			});
 		}
 		
 		if (mRequestArray.size() <= 0) {

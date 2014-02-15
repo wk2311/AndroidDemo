@@ -66,7 +66,7 @@ public class PlayService extends Service implements OnPreparedListener,
 
 	public static final String PLAYSTATE_PLAYING = "playstate_playing";
 
-	private static final int NOTIFICATION_ID = 0x01;
+	private static final int NOTIFICATION_STATUS_BAR = 0x01;
 
 	private static final int REQUEST_AUDIOPLAYER = 0x01;
 
@@ -96,10 +96,11 @@ public class PlayService extends Service implements OnPreparedListener,
 	
 	@Override
 	public void onDestroy() {
-		mMediaPlayer.release();
+		mNotificationHolder.collapseNotification();
 		if (mAudioCursor != null) {
 			mAudioCursor.close();
 		}
+		mMediaPlayer.release();
 		super.onDestroy();
 	}
 
@@ -311,6 +312,10 @@ public class PlayService extends Service implements OnPreparedListener,
 									PendingIntent.FLAG_UPDATE_CURRENT));
 		}
 	
+		public void collapseNotification() {
+			mNotificationManager.cancel(NOTIFICATION_STATUS_BAR);
+		}
+
 		private PendingIntent createNotificationClickIntent(String action) {
 			Intent buttonIntent = new Intent(PlayService.this, PlayService.class).setAction(action);
 			return PendingIntent.getService(getApplicationContext(), REQUEST_PLAYSERVICE, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -321,7 +326,7 @@ public class PlayService extends Service implements OnPreparedListener,
 //			if (imageLink != null) {
 //				ImageUtil.loadImage(imageLink, this);
 //			}
-			mNotificationManager.notify(NOTIFICATION_ID, getNotification(null));
+			mNotificationManager.notify(NOTIFICATION_STATUS_BAR, getNotification(null));
 		}
 
 		private Notification getNotification(Bitmap bitmap) {
@@ -352,7 +357,7 @@ public class PlayService extends Service implements OnPreparedListener,
 
 		@Override
 		public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
-			mNotificationManager.notify(NOTIFICATION_ID, getNotification(arg2));
+			mNotificationManager.notify(NOTIFICATION_STATUS_BAR, getNotification(arg2));
 		}
 
 		@Override

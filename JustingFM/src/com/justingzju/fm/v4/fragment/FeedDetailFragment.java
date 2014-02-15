@@ -1,13 +1,14 @@
-package com.justingzju.fm.fragment;
+package com.justingzju.fm.v4.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.justingzju.fm.R;
 import com.justingzju.fm.storage.Feed;
 import com.justingzju.util.ImageUtil;
@@ -31,7 +32,7 @@ public class FeedDetailFragment extends Fragment {
 				false);
 		getFragmentManager()
 				.beginTransaction()
-				.add(R.id.fragment_container_tracks, TracksFragment.newInstance(mFeed),
+				.add(R.id.fragment_container_tracks, TracksFragment.newInstance(mFeed.getId(), Mode.BOTH),
 						TracksFragment.TAG).commit();
 		return view;
 	}

@@ -4,6 +4,7 @@
     <string name="app_name">Justing FM</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_home_page">HomePage</string>
+    <string name="title_fragment_feed_detail">FeedDetail</string>
 
     <!-- Content descriptions for the Bottom Action Bar -->
     <string name="cd_favorite">Make this a favorite song</string>

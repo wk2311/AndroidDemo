@@ -1,37 +1,34 @@
-package com.justingzju.fm.fragment;
+package com.justingzju.fm.v4.fragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.justingzju.fm.R;
-import com.justingzju.fm.adapter.FeedAdapter;
-import com.justingzju.fm.service.DownloadService;
-import com.justingzju.fm.storage.PodProvider;
-import com.justingzju.fm.storage.Feed;
-import com.justingzju.util.LogUtil;
-
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+
+import com.justingzju.fm.R;
+import com.justingzju.fm.adapter.FeedAdapter;
+import com.justingzju.fm.service.DownloadService;
+import com.justingzju.fm.storage.Feed;
+import com.justingzju.fm.storage.PodProvider;
+import com.justingzju.util.LogUtil;
 
 public class FeedsFragment extends Fragment implements LoaderCallbacks<Cursor>,
 		OnItemClickListener {

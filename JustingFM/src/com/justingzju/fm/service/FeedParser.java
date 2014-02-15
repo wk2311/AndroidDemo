@@ -69,7 +69,7 @@ public class FeedParser {
 					if (pubDate!=INVALID_TIME && pubDate>lastUpdateTime) {
 						valueslist.add(values);
 						pubDate = INVALID_TIME;
-						done = valueslist.size()>=maxInitNum;
+//						done = valueslist.size()>=maxInitNum;
 					} else {
 						done = true;
 					}
